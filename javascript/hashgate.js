@@ -247,30 +247,31 @@ document.addEventListener("DOMContentLoaded", () => {
     async function avviaAutenticazione(entropySignature) {
         statusEl.innerText = "Connessione al nodo...";
         try {
+            
             const siteKey = container.getAttribute('data-sitekey');
+            if (!siteKey) throw new Error("Nessuna API Key fornita dal client.");
 
+           
             const response = await fetch(`${API_BASE_URL}/challenge`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
-                    'x-hashgate-key': siteKey // <-- IL PASS PER IL SERVER
+                    'x-hashgate-key': siteKey 
                 },
                 body: JSON.stringify({ entropy_signature: entropySignature })
             });
-            const response = await fetch(`${API_BASE_URL}/challenge`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ entropy_signature: entropySignature })
-            });
             
-            if (!response.ok) throw new Error("API Rifiutata");
+            if (!response.ok) throw new Error("API Rifiutata o Key non valida");
             
             const data = await response.json();
             statusEl.innerText = "Calcolo in corso. . .";
             lanciaWorker(data.salt, data.difficulty);
+            
         } catch (error) {
+           
             statusEl.innerText = "Errore";
-            logEl.innerText = "/il firewall del server ha bloccato la richiesta.";
+            logEl.innerText = "il firewall del server ha bloccato la richiesta.";
+            console.error("HashGate Crash:", error.message); 
         }
     }
 
