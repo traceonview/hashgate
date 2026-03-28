@@ -92,15 +92,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // --- logica e sensori con supporto mobile ---
+    // --- logica e sensori con supporto mobile avanzato ---
     function inizializzaSensori() {
         let entropyScore = 0;
         let lastX = 0, lastY = 0;
         let isMining = false;
 
+        // 1. Sensore Spaziale (Mouse e Swipe)
         function analizzaMovimento(e) {
             if (isMining) return;
-            
-            // supporto per touch e mouse
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
             
@@ -111,29 +111,48 @@ document.addEventListener("DOMContentLoaded", () => {
             lastX = clientX;
             lastY = clientY;
         }
+
+        // 2. Sensore di Contatto (Tap su schermo - vitale per mobile)
+        function analizzaTap(e) {
+            if (isMining) return;
+            if (e.isTrusted) entropyScore += 2; // Un tap intenzionale vale doppio
+        }
+
+        // 3. Sensore di Battitura (Tastiera mobile o fisica)
+        function analizzaTastiera(e) {
+            if (isMining) return;
+            if (e.isTrusted) entropyScore += 1;
+        }
         
+        // Attivazione matrice sensoriale
         document.addEventListener('mousemove', analizzaMovimento);
-        document.addEventListener('touchmove', analizzaMovimento); // <-- Sensore Smartphone
+        document.addEventListener('touchmove', analizzaMovimento);
+        document.addEventListener('touchstart', analizzaTap); // <-- Sensore Tap
+        document.addEventListener('keydown', analizzaTastiera); // <-- Sensore Tastiera
 
         btn.addEventListener('click', async (e) => {
-            // RIlevamento Bot
+            // Rilevamento Bot
             if (!e.isTrusted || entropyScore < MIN_ENTROPY) {
                 localStorage.setItem('hashgate_verified', 'false');
                 statusEl.innerText = "Errore di traiettoria";
-                logEl.innerText = "Traiettoria non organica";
+                logEl.innerText = "Traiettoria non organica. Score: " + entropyScore; // <-- Debug
                 btn.disabled = true;
                 btn.innerText = "Bot Rilevato";
                 setTimeout(() => { window.location.reload(); }, 1500); 
                 return; 
             }
 
-            // uente Legittimo
+            // Utente Legittimo
             btn.classList.add('mining');
             btn.innerText = "Analisi Traiettorie..."; 
             btn.disabled = true;
             isMining = true;
+            
+            // Spegnimento sensori
             document.removeEventListener('mousemove', analizzaMovimento); 
-            document.removeEventListener('touchmove', analizzaMovimento); // <-- Stop Sensore
+            document.removeEventListener('touchmove', analizzaMovimento);
+            document.removeEventListener('touchstart', analizzaTap);
+            document.addEventListener('keydown', analizzaTastiera);
             
             avviaAutenticazione(entropyScore);
         });
