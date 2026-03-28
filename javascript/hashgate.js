@@ -65,13 +65,19 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         
+        /* success con gif */
         #hashgate-widget.passed #hg-verify-btn { 
-            background-color: transparent; /* <-- Fondamentale per la GIF */
+            background-color: transparent;
             border-color: var(--hg-accent);
             background-image: url('https://api.hashgate.net/cdn/static/success.gif');
-            background-size: 80%; /* Regola in base alla tua immagine */
+            background-size: 100%;
+            background-repeat: no-repeat;
         }
 
+        /* success con png */
+        #hashgate-widget.passed.frozen #hg-verify-btn { 
+            background-image: url('https://api.hashgate.net/cdn/static/success_static.png');
+        }
         
         #hashgate-widget.poisoned #hg-verify-btn { 
             background-color: transparent; 
