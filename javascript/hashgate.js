@@ -76,7 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         /* success con png */
         #hashgate-widget.passed.frozen #hg-verify-btn { 
-            background-image: url('https://api.hashgate.net/cdn/static/success_static.png');
+            background-image: url('https://api.hashgate.net/cdn/static/success.png');
         }
         
         #hashgate-widget.poisoned #hg-verify-btn { 
