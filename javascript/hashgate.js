@@ -308,14 +308,16 @@ document.addEventListener("DOMContentLoaded", () => {
             if (data.status === "success") {
                 localStorage.setItem('hashgate_verified', 'true'); 
                 widget.classList.add('passed');
+                setTimeout(() => {
+                    widget.classList.add('frozen');
+                }, 1200); 
                 statusEl.innerText = "Accesso Consentito";
                 statusEl.style.color = "#00ff00";
                 btn.classList.remove('mining');
-                btn.innerText = "";
-                logEl.innerText = `Sicurezza fornita da HashGate.net.`;
-                tokenInput.value = data.jwt_token;
-                
-                // Il nostro Camaleonte
+                btn.innerText = ""; 
+                logEl.innerText = "Identità confermata.";
+                tokenInput.value = data.jwt_token; 
+            }
                 if (hgMode === 'form') {
                     if (submitBtn) submitBtn.disabled = false;
                 } else if (hgMode === 'redirect') {
@@ -324,7 +326,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     setTimeout(() => { window.location.href = hgRedirectUrl; }, 1000);
                 }
             } else {
-                // Questo è il pezzo che avevi cancellato!
+                
                 throw new Error("Hash Rifiutato");
             }
         } catch (error) {
