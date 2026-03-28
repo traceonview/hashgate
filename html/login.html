@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Mailsense</title>
+    <style>
+        body { background: #0a0a0c; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: #141417; padding: 30px; border-radius: 8px; border: 1px solid #2a2a30; width: 100%; max-width: 350px; }
+        input { width: 100%; padding: 10px; margin-bottom: 15px; background: #0a0a0c; border: 1px solid #2a2a30; color: white; border-radius: 4px; box-sizing: border-box; }
+        button[type="submit"] { width: 100%; padding: 12px; background: #fff; color: #000; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; }
+        button[type="submit"]:disabled { background: #333; color: #666; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>Mailsense Auth</h2>
+        <form action="/il-tuo-endpoint-di-login" method="POST">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            
+            <div id="hashgate-container" data-mode="form"></div>
+            
+            <button type="submit" id="submit-btn">Accedi</button>
+        </form>
+    </div>
+
+    <script src="/percorso/al/tuo/hashgate.js?v=test1"></script>
+</body>
+</html>
