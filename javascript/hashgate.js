@@ -128,10 +128,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (hgState === 'true') {
         // profilo Umano
         widget.classList.add('passed');
-        btn.innerText = "Integrità verificata";
+        btn.innerText = "";
         btn.disabled = true;
-        statusEl.innerText = "Connessione Consentita";
-        logEl.innerText = "profilo caricato";
+        statusEl.innerText = "Verifica completata";
+        logEl.innerText = "Sicurezza fornita da HashGate.net";
         tokenInput.value = "token_locale_valido"; 
         if (hgMode === 'form' && submitBtn) {
             submitBtn.disabled = false;
