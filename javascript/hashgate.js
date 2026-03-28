@@ -16,6 +16,8 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
+    const hgMode = container.getAttribute('data-mode') || 'form'; 
+    const hgRedirectUrl = container.getAttribute('data-url') || '/';
     
     const stili = `
         /* Contenitore Principale (Layout Orizzontale) */
@@ -89,7 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // cerca il btn di submit
     const form = container.closest('form');
     const submitBtn = form ? form.querySelector('button[type="submit"], input[type="submit"]') : document.getElementById('submit-btn');
-    if (submitBtn) submitBtn.disabled = true;
+    if (submitBtn && hgMode === 'form') submitBtn.disabled = true;
 
     // --- CONTROLLO PERSISTENZA E POISONING ---
     const hgState = localStorage.getItem('hashgate_verified');
@@ -102,7 +104,12 @@ document.addEventListener("DOMContentLoaded", () => {
         statusEl.innerText = "Connessione Consentita";
         logEl.innerText = "profilo caricato";
         tokenInput.value = "token_locale_valido"; 
-        if (submitBtn) submitBtn.disabled = false;
+        if (hgMode === 'form' && submitBtn) {
+            submitBtn.disabled = false;
+        } else if (hgMode === 'redirect') {
+            logEl.innerText = "Sessione valida. Reindirizzamento...";
+            setTimeout(() => { window.location.href = hgRedirectUrl; }, 1000);
+        }
         
     } else if (hgState === 'false') {
         // bot bannato
@@ -133,62 +140,66 @@ document.addEventListener("DOMContentLoaded", () => {
         let entropyScore = 0;
         let lastX = 0, lastY = 0;
         let isMining = false;
+        const sessionStartTime = Date.now();
+        let firstTapTime = 0;
 
-        // 1. Sensore Spaziale (Mouse e Swipe)
         function analizzaMovimento(e) {
             if (isMining) return;
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            
-            const deltaX = Math.abs(clientX - lastX);
-            const deltaY = Math.abs(clientY - lastY);
-            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            const distance = Math.sqrt(Math.pow(clientX - lastX, 2) + Math.pow(clientY - lastY, 2));
             if (distance > 0 && distance < 150) { entropyScore += 1; }
             lastX = clientX;
             lastY = clientY;
         }
 
-        // 2. Sensore di Contatto (Tap su schermo - vitale per mobile)
-        function analizzaTap(e) {
-            if (isMining) return;
-            if (e.isTrusted) entropyScore += 2; // Un tap intenzionale vale doppio
-        }
-
-        // 3. Sensore di Battitura (Tastiera mobile o fisica)
-        function analizzaTastiera(e) {
-            if (isMining) return;
-            if (e.isTrusted) entropyScore += 1;
+        function analizzaTap(e) { if (!isMining && e.isTrusted) entropyScore += 2; }
+        function analizzaTastiera(e) { if (!isMining && e.isTrusted) entropyScore += 1; }
+        function analizzaGiroscopio(e) {
+            if (!isMining && e.beta && e.gamma && (Math.abs(e.beta) > 1 || Math.abs(e.gamma) > 1)) {
+                entropyScore += 2;
+                window.removeEventListener('deviceorientation', analizzaGiroscopio);
+            }
         }
         
-        // Attivazione matrice sensoriale
         document.addEventListener('mousemove', analizzaMovimento);
         document.addEventListener('touchmove', analizzaMovimento);
-        document.addEventListener('touchstart', analizzaTap); // <-- Sensore Tap
-        document.addEventListener('keydown', analizzaTastiera); // <-- Sensore Tastiera
+        document.addEventListener('touchstart', analizzaTap); 
+        document.addEventListener('keydown', analizzaTastiera); 
+        if (window.DeviceOrientationEvent) window.addEventListener('deviceorientation', analizzaGiroscopio);
 
         btn.addEventListener('click', async (e) => {
-            // Rilevamento Bot
-            if (!e.isTrusted || entropyScore < MIN_ENTROPY) {
+            const timeToClick = Date.now() - sessionStartTime;
+
+            if (!e.isTrusted || timeToClick < 300) {
                 localStorage.setItem('hashgate_verified', 'false');
-                statusEl.innerText = "Errore di traiettoria";
-                logEl.innerText = "Traiettoria non organica. Score: " + entropyScore; // <-- Debug
-                btn.disabled = true;
-                btn.innerText = "Bot Rilevato";
                 setTimeout(() => { window.location.reload(); }, 1500); 
                 return; 
             }
 
-            // Utente Legittimo
+            if (entropyScore < MIN_ENTROPY) {
+                if (firstTapTime === 0) {
+                    firstTapTime = Date.now();
+                    statusEl.innerText = "Conferma tocco";
+                    statusEl.style.color = "#ffcc00"; 
+                    return; 
+                } else {
+                    const timeBetweenTaps = Date.now() - firstTapTime;
+                    if (timeBetweenTaps < 100 || timeBetweenTaps > 5000) return;
+                    entropyScore = MIN_ENTROPY; 
+                }
+            }
+
+            statusEl.style.color = "#fff";
             btn.classList.add('mining');
             btn.innerText = "Analisi Traiettorie..."; 
             btn.disabled = true;
             isMining = true;
             
-            // Spegnimento sensori
             document.removeEventListener('mousemove', analizzaMovimento); 
             document.removeEventListener('touchmove', analizzaMovimento);
             document.removeEventListener('touchstart', analizzaTap);
-            document.addEventListener('keydown', analizzaTastiera);
+            document.removeEventListener('keydown', analizzaTastiera);
             
             avviaAutenticazione(entropyScore);
         });
@@ -265,10 +276,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 logEl.innerText = `JWT Generato. Sicurezza: Massima.`;
                 tokenInput.value = data.jwt_token;
                 
-                if (submitBtn) submitBtn.disabled = false;
-            } else {
-                throw new Error("Hash Rifiutato");
-            }
+                if (hgMode === 'form') {
+                    if (submitBtn) submitBtn.disabled = false;
+                } else if (hgMode === 'redirect') {
+                    document.cookie = `hg_session=${data.jwt_token}; path=/; max-age=3600; Secure; SameSite=Strict`;
+                    logEl.innerText = "Reindirizzamento in corso...";
+                    setTimeout(() => { window.location.href = hgRedirectUrl; }, 1000);
+                }
         } catch (error) {
             statusEl.innerText = "Accesso Negato";
             statusEl.style.color = "red";
