@@ -247,6 +247,16 @@ document.addEventListener("DOMContentLoaded", () => {
     async function avviaAutenticazione(entropySignature) {
         statusEl.innerText = "Connessione al nodo...";
         try {
+            const siteKey = container.getAttribute('data-sitekey');
+
+            const response = await fetch(`${API_BASE_URL}/challenge`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'x-hashgate-key': siteKey // <-- IL PASS PER IL SERVER
+                },
+                body: JSON.stringify({ entropy_signature: entropySignature })
+            });
             const response = await fetch(`${API_BASE_URL}/challenge`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
