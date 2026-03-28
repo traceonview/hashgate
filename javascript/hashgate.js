@@ -376,5 +376,5 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error("HashGate Log:", error.message);
         }
     }
-    // se vedi questo commento il codice sorgente è stato aggiornato in automatico. ID: 1
-})();
+    // se vedi questo commento il codice sorgente è stato aggiornato in automatico. ID: 2
+});
