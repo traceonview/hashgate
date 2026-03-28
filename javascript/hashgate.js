@@ -5,6 +5,10 @@
 console.log("log - hashgate.js caricato correttamente");
 
 document.addEventListener("DOMContentLoaded", () => {
+    // eliminiamo il coockie così da evitare falsi positivi
+    localStorage.removeItem('hashgate_verified');
+    document.cookie = "hg_session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+    console.log("log - sessione pulita");
 
     const API_BASE_URL = "https://api.hashgate.net"; 
     const MIN_ENTROPY = 5; 
