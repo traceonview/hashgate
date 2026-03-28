@@ -305,8 +305,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 statusEl.innerText = "Accesso Consentito";
                 statusEl.style.color = "#00ff00";
                 btn.classList.remove('mining');
-                btn.innerText = "Integrità verificata (Persistente)";
-                logEl.innerText = `JWT Generato. Sicurezza: Massima.`;
+                btn.innerText = "";
+                logEl.innerText = `Sicurezza fornita da HashGate.net.`;
                 tokenInput.value = data.jwt_token;
                 
                 // Il nostro Camaleonte
