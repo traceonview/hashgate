@@ -328,7 +328,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 btn.innerText = ""; 
                 logEl.innerText = "Identità confermata.";
                 tokenInput.value = data.jwt_token; 
-            }
+                
                 if (hgMode === 'form') {
                     if (submitBtn) submitBtn.disabled = false;
                 } else if (hgMode === 'redirect') {
@@ -336,8 +336,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     logEl.innerText = "Reindirizzamento in corso...";
                     setTimeout(() => { window.location.href = hgRedirectUrl; }, 1000);
                 }
-            } else {
                 
+            } else {
                 throw new Error("Hash Rifiutato");
             }
         } catch (error) {
