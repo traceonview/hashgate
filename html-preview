@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HashGate Test - v.1</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==========================================
+           1. RESET, LAYOUT & VARIABILI (Dark Tech)
+           ========================================== */
+        :root {
+            --bg-color: #0a0a0c;
+            --card-color: #141417;
+            --border-color: #2a2a30;
+            --text-primary: #e0e0e6;
+            --text-secondary: #90909a;
+            --accent: #00ff88;        
+            --error: #ff4444;          
+            --poison: #ffcc00;          
+            --primary-btn: #ffffff;
+            --primary-btn-txt: #000000;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ==========================================
+           2. IL FORM CONTAINER
+           ========================================== */
+        .form-card {
+            background-color: var(--card-color);
+            padding: 40px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 420px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: transform 0.3s ease;
+        }
+
+        h2 { margin-top: 0; margin-bottom: 30px; font-weight: 600; text-align: center; }
+        .input-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-secondary); }
+
+        input[type="text"] {
+            width: 100%; padding: 12px 16px;
+            background-color: rgba(255,255,255,0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+        }
+
+        /* ==========================================
+           3. IL WIDGET HASHGATE
+           ========================================== */
+        #hashgate-widget {
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            border-radius: 12px;
+            background-color: rgba(255,255,255,0.01);
+            margin-bottom: 25px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .hg-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        .hg-logo { color: var(--text-primary); font-weight: 600; }
+        .hg-version { opacity: 0.5; font-family: 'Fira Code', monospace; }
+
+        #hg-verify-btn {
+            width: 100%; padding: 14px;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: flex-start;
+            transition: all 0.2s ease;
+        }
+
+        #hg-verify-btn::before {
+            content: ''; display: inline-block;
+            width: 18px; height: 18px;
+            border: 2px solid var(--border-color);
+            border-radius: 4px; margin-right: 12px;
+            transition: all 0.2s ease;
+        }
+
+        /* STATI DEL WIDGET */
+        #hashgate-widget.passed {
+            border-color: var(--accent);
+            background-color: rgba(0,255,136,0.03);
+        }
+        #hashgate-widget.passed #hg-verify-btn {
+            border-color: var(--accent); color: var(--accent);
+            cursor: default;
+        }
+        #hashgate-widget.passed #hg-verify-btn::before {
+            border-color: var(--accent);
+            background-color: var(--accent); 
+        }
+        #hashgate-widget.passed #hg-status { color: var(--accent); }
+
+        #hashgate-widget.poisoned {
+            border-color: var(--error);
+            background-color: rgba(255,68,68,0.03);
+        }
+        #hashgate-widget.poisoned #hg-verify-btn {
+            border-color: var(--poison); color: var(--poison);
+            cursor: not-allowed;
+        }
+        #hashgate-widget.poisoned #hg-verify-btn::before {
+            border-color: var(--poison);
+            content: 'poisoning text'; display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; border: none; 
+        }
+        #hashgate-widget.poisoned #hg-status { color: var(--poison); }
+
+        .hg-meta-area { margin-top: 15px; display: flex; flex-direction: column; gap: 4px; }
+        #hg-status { font-size: 0.9rem; font-weight: 500; transition: color 0.3s ease; }
+        #hg-log { font-family: 'Fira Code', monospace; font-size: 0.75rem; color: var(--text-secondary); min-height: 1.2em; }
+
+        /* ==========================================
+           4. BOTTONE INVIO FINALE
+           ========================================== */
+        #submit-btn {
+            width: 100%; padding: 14px;
+            background-color: var(--primary-btn); color: var(--primary-btn-txt);
+            border: none; border-radius: 8px;
+            font-size: 1rem; font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        #submit-btn:disabled { background-color: #2a2a30; color: #555; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+    <div class="form-card">
+        <h2>Login</h2>
+        <form id="secure-form">
+            <div class="input-group">
+                <label>username</label>
+                <input type="text" placeholder="inserisci l'username" required>
+            </div>
+
+            <div id="hashgate-widget">
+                <div class="hg-header">
+                    <span class="hg-logo">HASHGATE Security</span>
+                    <span class="hg-version">v1</span>
+                </div>
+                
+                <button type="button" id="hg-verify-btn">
+                    Verifica con HASHGATE
+                </button>
+
+                <div class="hg-meta-area">
+                    <div id="hg-status">In attesa di interazione...</div>
+                    <div id="hg-log"></div>
+                </div>
+                
+                <input type="hidden" id="hg-token" name="hg-token" required>
+            </div>
+
+            <button type="submit" id="submit-btn" disabled>Invia</button>
+        </form>
+    </div>
+
+    <script src="/javascript/hashgate.js"></script>
+
+</body>
+</html>
