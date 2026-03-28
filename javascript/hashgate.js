@@ -307,6 +307,35 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     }
 
+    // --- 1. FASE DI AVVIO E CHIAMATA AL SERVER ---
+    async function avviaAutenticazione(entropySignature) {
+        statusEl.innerText = "Connessione al nodo...";
+        try {
+            const siteKey = container.getAttribute('data-sitekey');
+            if (!siteKey) throw new Error("Nessuna API Key fornita dal client.");
+
+            const response = await fetch(`${API_BASE_URL}/challenge`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'x-hashgate-key': siteKey
+                },
+                body: JSON.stringify({ entropy_signature: entropySignature })
+            });
+            
+            if (!response.ok) throw new Error("API Rifiutata o Key non valida");
+            
+            const data = await response.json();
+            statusEl.innerText = "Calcolo in corso. . .";
+            lanciaWorker(data.salt, data.difficulty);
+            
+        } catch (error) {
+            statusEl.innerText = "Errore";
+            logEl.innerText = "/il firewall del server ha bloccato la richiesta.";
+            console.error("HashGate Log:", error.message);
+        }
+    }
+
     async function validaRisultato(salt, nonce) {
         try {
             const response = await fetch(`${API_BASE_URL}/verify`, {
@@ -336,13 +365,13 @@ document.addEventListener("DOMContentLoaded", () => {
                     logEl.innerText = "Reindirizzamento in corso...";
                     setTimeout(() => { window.location.href = hgRedirectUrl; }, 1000);
                 }
-                
             } else {
-                throw new Error("Hash Rifiutato");
+                throw new Error("Hash Rifiutato dal server");
             }
         } catch (error) {
             statusEl.innerText = "Accesso Negato";
             statusEl.style.color = "red";
+            console.error("HashGate Log:", error.message);
         }
     }
 })();
