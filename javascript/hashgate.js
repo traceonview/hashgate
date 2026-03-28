@@ -23,65 +23,90 @@ document.addEventListener("DOMContentLoaded", () => {
     const hgMode = container.getAttribute('data-mode') || 'form'; 
     const hgRedirectUrl = container.getAttribute('data-url') || '/';
     
+    const hgTheme = container.getAttribute('data-theme') || 'dark';
     const stili = `
-        /* Contenitore Principale (Layout Orizzontale) */
-        #hashgate-widget { display: flex; align-items: center; width: 100%; max-width: 340px; background: #141417; border: 1px solid #2a2a30; border-radius: 6px; padding: 12px 16px; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.3s ease; margin-bottom: 20px; }
+        :root {
+            --hg-bg: ${hgTheme === 'dark' ? '#141417' : '#ffffff'};
+            --hg-border: ${hgTheme === 'dark' ? '#2a2a30' : '#e0e0e0'};
+            --hg-text: ${hgTheme === 'dark' ? '#ffffff' : '#1a1a1a'};
+            --hg-text-dim: ${hgTheme === 'dark' ? '#90909a' : '#666666'};
+            --hg-accent: #00ff88;
+            --hg-error: #ff4444;
+            --hg-btn-bg: ${hgTheme === 'dark' ? '#0a0a0c' : '#f5f5f7'};
+        }
+
+        #hashgate-widget { 
+            display: flex; align-items: center; width: 100%; max-width: 360px; 
+            background: var(--hg-bg); border: 1px solid var(--hg-border); 
+            border-radius: 12px; padding: 12px 18px; box-sizing: border-box; 
+            font-family: 'Inter', system-ui, sans-serif; 
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12); 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            position: relative; overflow: hidden;
+        }
+
+        /* Area Checkbox con Immagini */
+        .hg-checkbox-area { margin-right: 15px; display: flex; align-items: center; position: relative; }
         
-        /* Area Checkbox */
-        .hg-checkbox-area { margin-right: 15px; display: flex; align-items: center; }
-        #hg-verify-btn { width: 28px; height: 28px; background: #0a0a0c; border: 2px solid #4a4a50; border-radius: 4px; cursor: pointer; transition: all 0.3s; position: relative; color: transparent !important; font-size: 0 !important; overflow: hidden; padding: 0; }
-        #hg-verify-btn:hover { border-color: #888; }
+        #hg-verify-btn { 
+            width: 32px; height: 32px; background: var(--hg-btn-bg); 
+            border: 2px solid var(--hg-border); border-radius: 8px; 
+            cursor: pointer; transition: all 0.3s; position: relative;
+            background-size: 60%; background-position: center; background-repeat: no-repeat;
+        }
 
-        /* Area Testi Centrali */
-        .hg-text-area { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
-        #hg-status { font-size: 0.9rem; font-weight: 500; color: #fff; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
-        #hg-log { font-size: 0.7rem; color: #90909a; margin-top: 3px; font-family: monospace; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+        #hg-verify-btn:hover { border-color: var(--hg-accent); transform: scale(1.05); }
 
-        /* Area Brand e Link (Destra) */
-        .hg-brand-area { display: flex; flex-direction: column; align-items: flex-end; margin-left: 10px; }
-        .hg-logo { font-size: 0.85rem; font-weight: 800; color: #fff; letter-spacing: 0.5px; }
-        .hg-logo span { color: #00ff88; }
-        .hg-links { font-size: 0.55rem; color: #666; margin-top: 4px; display: flex; gap: 6px; }
-        .hg-links a { color: #666; text-decoration: none; transition: 0.2s; }
-        .hg-links a:hover { color: #aaa; text-decoration: underline; }
+        /* Stati Animati con GIF/PNG */
+        #hg-verify-btn.mining { 
+            border-radius: 50%; border-color: transparent;
+            background-image: url('https://api.hashgate.net/cdn/assets/loading.gif'); 
+            background-size: cover; cursor: wait; 
+        }
 
-        /* ANIMAZIONE: MINING (Spinner) */
-        @keyframes hg-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        #hg-verify-btn.mining { border-radius: 50%; border-color: #2a2a30; border-top-color: #00ff88; animation: hg-spin 1s linear infinite; background: transparent; cursor: wait; }
+        #hashgate-widget.passed #hg-verify-btn { 
+            background-color: var(--hg-accent); border-color: var(--hg-accent);
+            background-image: url('https://api.hashgate.net/cdn/assets/success.png');
+            background-size: 55%;
+        }
 
-        /* STATO: PASSED (Spunta verde) */
-        #hashgate-widget.passed { border-color: #00ff88; background: rgba(0, 255, 136, 0.03); }
-        #hashgate-widget.passed #hg-verify-btn { border-color: #00ff88; background: #00ff88; cursor: default; }
-        #hashgate-widget.passed #hg-verify-btn::after { content: ''; position: absolute; left: 8px; top: 4px; width: 5px; height: 10px; border: solid #141417; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+        #hashgate-widget.poisoned #hg-verify-btn { 
+            background-color: var(--hg-error); border-color: var(--hg-error);
+            background-image: url('https://api.hashgate.net/cdn/assets/error.png');
+            background-size: 50%;
+        }
 
-        /* STATO: POISONED (Croce rossa) */
-        #hashgate-widget.poisoned { border-color: #ff4444; background: rgba(255, 68, 68, 0.03); }
-        #hashgate-widget.poisoned #hg-verify-btn { border-color: #ff4444; background: #ff4444; cursor: not-allowed; }
-        #hashgate-widget.poisoned #hg-verify-btn::after { content: '×'; position: absolute; left: 6px; top: -3px; font-size: 24px; color: #141417; font-weight: bold; font-family: sans-serif; }
+        /* Testi e Brand */
+        .hg-text-area { flex-grow: 1; display: flex; flex-direction: column; }
+        #hg-status { font-size: 0.95rem; font-weight: 600; color: var(--hg-text); }
+        #hg-log { font-size: 0.75rem; color: var(--hg-text-dim); margin-top: 2px; }
+
+        .hg-brand-area { display: flex; flex-direction: column; align-items: flex-end; opacity: 0.8; }
+        .hg-brand-logo { width: 22px; height: 22px; margin-bottom: 4px; }
     `;
     document.head.insertAdjacentHTML('beforeend', `<style>${stili}</style>`);
 
    
     container.innerHTML = `
-        <div id="hashgate-widget">
+        <div id="hashgate-widget" class="hg-${hgTheme}">
             <div class="hg-checkbox-area">
-                <button type="button" id="hg-verify-btn" title="Clicca per verificare l'integrità"></button>
+                <button type="button" id="hg-verify-btn"></button>
             </div>
             
             <div class="hg-text-area">
-                <div id="hg-status">Verifica se sei umano</div>
-                <div id="hg-log">Protetto da HashGate</div>
+                <div id="hg-status">Security Check</div>
+                <div id="hg-log">Verify your identity</div>
             </div>
             
             <div class="hg-brand-area">
-                <div class="hg-logo"><span>H</span>G</div>
-                <div class="hg-links">
-                    <a href="https://hashgate.net/security/privacy" target="_blank">Privacy</a>
-                    <a href="https://hashgate.net/security/info" target="_blank">Info</a>
+                <img src="https://api.hashgate.net/cdn/assets/logo.png" class="hg-brand-logo" alt="HG">
+                <div class="hg-links" style="font-size: 0.6rem; color: var(--hg-text-dim); display: flex; gap: 8px;">
+                    <a href="#" style="color: inherit; text-decoration: none;">Privacy</a>
+                    <a href="#" style="color: inherit; text-decoration: none;">Terms</a>
                 </div>
             </div>
             
-            <input type="hidden" id="hg-token" name="hg-token" required>
+            <input type="hidden" id="hg-token" name="hg-token">
         </div>
     `;
 
