@@ -345,12 +345,11 @@ document.addEventListener("DOMContentLoaded", () => {
             });
             const data = await response.json();
 
+            // INIZIO BLOCCO IF PRINCIPALE
             if (data.status === "success") {
                 localStorage.setItem('hashgate_verified', 'true'); 
                 widget.classList.add('passed');
-                setTimeout(() => {
-                    widget.classList.add('frozen');
-                }, 1200); 
+                setTimeout(() => widget.classList.add('frozen'), 1200); 
                 statusEl.innerText = "Accesso Consentito";
                 statusEl.style.color = "#00ff00";
                 btn.classList.remove('mining');
@@ -358,6 +357,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 logEl.innerText = "Identità confermata.";
                 tokenInput.value = data.jwt_token; 
                 
+                // Sotto-blocco per le modalità
                 if (hgMode === 'form') {
                     if (submitBtn) submitBtn.disabled = false;
                 } else if (hgMode === 'redirect') {
@@ -365,13 +365,16 @@ document.addEventListener("DOMContentLoaded", () => {
                     logEl.innerText = "Reindirizzamento in corso...";
                     setTimeout(() => { window.location.href = hgRedirectUrl; }, 1000);
                 }
+            // FINE BLOCCO IF PRINCIPALE, INIZIO ELSE
             } else {
-                throw new Error("Hash Rifiutato dal server");
+                throw new Error("Hash Rifiutato");
             }
+
         } catch (error) {
             statusEl.innerText = "Accesso Negato";
             statusEl.style.color = "red";
             console.error("HashGate Log:", error.message);
         }
     }
+    // se vedi questo commento il codice sorgente è stato aggiornato in automatico. ID: 1
 })();
