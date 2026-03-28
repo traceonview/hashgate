@@ -4,7 +4,7 @@
 
 console.log("log - hashgate.js caricato correttamente");
 
-(() => {
+document.addEventListener("DOMContentLoaded", () => {
 
     const API_BASE_URL = "https://api.hashgate.net"; 
     const MIN_ENTROPY = 5; 
@@ -43,7 +43,6 @@ console.log("log - hashgate.js caricato correttamente");
         </div>
     `;
 
-    document.addEventListener("DOMContentLoaded", () => {
     const widget = document.getElementById('hashgate-widget');
     const btn = document.getElementById('hg-verify-btn');
     const statusEl = document.getElementById('hg-status');
@@ -224,4 +223,4 @@ console.log("log - hashgate.js caricato correttamente");
         }
     }
 
-})(); 
+});
