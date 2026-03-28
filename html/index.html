@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Mailsense</title>
+    <style>
+        body { background: #0a0a0c; color: white; font-family: sans-serif; display: flex; justify-content: center; padding-top: 50px; }
+        .form-card { background: #141417; padding: 30px; border-radius: 12px; width: 350px; }
+        input[type="text"] { width: 100%; padding: 10px; margin-bottom: 20px; box-sizing: border-box; }
+        button[type="submit"] { width: 100%; padding: 12px; background: white; color: black; border: none; font-weight: bold; cursor: pointer; }
+        button[type="submit"]:disabled { background: #333; color: #666; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+    <div class="form-card">
+        <h2>Accedi a Mailsense</h2>
+        <form id="secure-form">
+            <label>Username</label>
+            <input type="text" placeholder="Es. trace_admin" required>
+
+            <div id="hashgate-container"></div>
+            
+            <button type="submit" id="submit-btn" disabled>Completa Connessione</button>
+        </form>
+    </div>
+
+    <script src="/cdn/javascript/hashgate.js"></script> 
+    </body>
+</html>
