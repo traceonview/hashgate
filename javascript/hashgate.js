@@ -276,6 +276,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 logEl.innerText = `JWT Generato. Sicurezza: Massima.`;
                 tokenInput.value = data.jwt_token;
                 
+                // Il nostro Camaleonte
                 if (hgMode === 'form') {
                     if (submitBtn) submitBtn.disabled = false;
                 } else if (hgMode === 'redirect') {
@@ -283,10 +284,13 @@ document.addEventListener("DOMContentLoaded", () => {
                     logEl.innerText = "Reindirizzamento in corso...";
                     setTimeout(() => { window.location.href = hgRedirectUrl; }, 1000);
                 }
+            } else {
+                // Questo è il pezzo che avevi cancellato!
+                throw new Error("Hash Rifiutato");
+            }
         } catch (error) {
             statusEl.innerText = "Accesso Negato";
             statusEl.style.color = "red";
         }
     }
-
 })();
