@@ -1,6 +1,18 @@
-import jwt
-import time
+"""
+=========================================================
+HashGate.net/python-sdk
+=========================================================
+Author: Trace Wilson | HashGate Security
+Copyright (c) 2026 HashGate.
+License: GNU GPL V3
 
+Link Utili:
+- Documentazione: https://hashgate.net/docs/python/sdk
+- Supporto Diretto (Discord): https://discord.gg/hashgate
+=========================================================
+"""
+
+# GUIDA VELOCE
 """
 crea il file hashgate_sdk.py nella stessa directory del tuo server.py e in cima al file digita 'from hashgate_sdk import is_human
 per includerla nel tuo server python inserisci questa funzione nella route desiderata (quella di destinazione dopo un click o la verifica, non metterla in '/' se l'utente prima non ha eseguito la verifica)
@@ -15,6 +27,12 @@ hg_token = request.form.get('hg-token')
 
 assicurati di importare la libreria re e request da flask se il tuo server di produzione utilizza flask. 
 """
+
+import jwt
+import time
+
+
+
 # DEVE combaciare ESATTAMENTE con la SECRET_KEY del tuo server python
 HASHGATE_SECRET = "prod-secret-key"
 
