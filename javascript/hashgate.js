@@ -19,18 +19,18 @@ const hgState = localStorage.getItem('hashgate_verified');
 if (hgState === 'true') {
     // profilo Umano
     widget.classList.add('passed');
-    btn.innerText = "Integrità verificata (Persistente)";
+    btn.innerText = "Integrità verificata";
     btn.disabled = true;
-    statusEl.innerText = "Connessione Consentita 🟢";
-    logEl.innerText = "Profilo umano caricato dalla memoria locale.";
+    statusEl.innerText = "Connessione Consentita";
+    logEl.innerText = "profilo caricato";
     submitBtn.disabled = false;
     
 } else if (hgState === 'false') {
     // bot bannato
     widget.classList.add('poisoned');
-    btn.innerText = "Sistema Shadowbannato";
+    btn.innerText = "pois";
     btn.disabled = true;
-    statusEl.innerText = "Accesso Negato: Anomalìa 💀";
+    statusEl.innerText = "Accesso Negato";
     statusEl.style.color = "red";
     
     function poisoningCore() {
