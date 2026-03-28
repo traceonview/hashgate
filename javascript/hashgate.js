@@ -2,7 +2,7 @@
 // HASHGATE - HASHGATE.JS V1 - discord.gg/mailsense | t.me/mailsense - t.me/TraceOnView
 // ==========================================
 
-const API_BASE_URL = "http://api.hashgate.net"; 
+const API_BASE_URL = "https://api.hashgate.net"; 
 const MIN_ENTROPY = 5; 
 
 // Elementi
