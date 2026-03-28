@@ -60,19 +60,19 @@ document.addEventListener("DOMContentLoaded", () => {
         /* Stati Animati con GIF/PNG */
         #hg-verify-btn.mining { 
             border-radius: 50%; border-color: transparent;
-            background-image: url('https://api.hashgate.net/cdn/assets/loading.gif'); 
+            background-image: url('https://api.hashgate.net/cdn/static/loading.gif'); 
             background-size: cover; cursor: wait; 
         }
 
         #hashgate-widget.passed #hg-verify-btn { 
             background-color: var(--hg-accent); border-color: var(--hg-accent);
-            background-image: url('https://api.hashgate.net/cdn/assets/success.png');
+            background-image: url('https://api.hashgate.net/cdn/static/success.gif');
             background-size: 55%;
         }
 
         #hashgate-widget.poisoned #hg-verify-btn { 
             background-color: var(--hg-error); border-color: var(--hg-error);
-            background-image: url('https://api.hashgate.net/cdn/assets/error.png');
+            background-image: url('https://api.hashgate.net/cdn/static/error.png');
             background-size: 50%;
         }
 
@@ -99,7 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
             
             <div class="hg-brand-area">
-                <img src="https://api.hashgate.net/cdn/assets/logo.png" class="hg-brand-logo" alt="HG">
+                <img src="https://api.hashgate.net/cdn/static/logo.webp" class="hg-brand-logo" alt="HG">
                 <div class="hg-links" style="font-size: 0.6rem; color: var(--hg-text-dim); display: flex; gap: 8px;">
                     <a href="#" style="color: inherit; text-decoration: none;">Privacy</a>
                     <a href="#" style="color: inherit; text-decoration: none;">Terms</a>
