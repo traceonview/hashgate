@@ -57,23 +57,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
         #hg-verify-btn:hover { border-color: var(--hg-accent); transform: scale(1.05); }
 
-        /* Stati Animati con GIF/PNG */
+        /* Stati Animati con immagini */
         #hg-verify-btn.mining { 
             border-radius: 50%; border-color: transparent;
             background-image: url('https://api.hashgate.net/cdn/static/loading.gif'); 
             background-size: cover; cursor: wait; 
         }
 
+        
         #hashgate-widget.passed #hg-verify-btn { 
-            background-color: var(--hg-accent); border-color: var(--hg-accent);
+            background-color: transparent; /* <-- Fondamentale per la GIF */
+            border-color: var(--hg-accent);
             background-image: url('https://api.hashgate.net/cdn/static/success.gif');
-            background-size: 55%;
+            background-size: 80%; /* Regola in base alla tua immagine */
         }
 
+        
         #hashgate-widget.poisoned #hg-verify-btn { 
-            background-color: var(--hg-error); border-color: var(--hg-error);
+            background-color: transparent; 
+            border-color: var(--hg-error);
             background-image: url('https://api.hashgate.net/cdn/static/error.png');
-            background-size: 50%;
+            background-size: 70%;
         }
 
         /* Testi e Brand */
