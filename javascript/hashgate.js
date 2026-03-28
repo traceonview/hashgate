@@ -43,7 +43,7 @@ console.log("log - hashgate.js caricato correttamente");
         </div>
     `;
 
-    
+    document.addEventListener("DOMContentLoaded", () => {
     const widget = document.getElementById('hashgate-widget');
     const btn = document.getElementById('hg-verify-btn');
     const statusEl = document.getElementById('hg-status');
@@ -53,6 +53,10 @@ console.log("log - hashgate.js caricato correttamente");
     // Trova il bottone di submit
     const form = container.closest('form');
     const submitBtn = form ? form.querySelector('button[type="submit"], input[type="submit"]') : document.getElementById('submit-btn');
+        if (!widget) {
+        console.error("'hashgate-widget' non trovato nell'html.");
+        return;
+    }
     if (submitBtn) submitBtn.disabled = true;
 
     // --- CONTROLLO PERSISTENZA E POISONING ---
