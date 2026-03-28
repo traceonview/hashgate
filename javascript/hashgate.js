@@ -44,11 +44,11 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
 
     
-    const widget = document.getElementById('hashgate-widget');
-    const btn = document.getElementById('hg-verify-btn');
-    const statusEl = document.getElementById('hg-status');
-    const logEl = document.getElementById('hg-log');
-    const tokenInput = document.getElementById('hg-token');
+    const widget = container.querySelector('#hashgate-widget');
+    const btn = container.querySelector('#hg-verify-btn');
+    const statusEl = container.querySelector('#hg-status');
+    const logEl = container.querySelector('#hg-log');
+    const tokenInput = container.querySelector('#hg-token');
     
     // cerca il btn di submit
     const form = container.closest('form');
