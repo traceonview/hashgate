@@ -3,187 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verifica Sicurezza | HashGate Lounge</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <title>Hashgate | Verifica di Sicurezza</title>
     <style>
-        /* --- RESET & FULL SCREEN CORE --- */
+        /* Reset di base per garantire il full-page */
         html, body {
-            height: 100%; width: 100%;
-            margin: 0; padding: 0;
-            overflow: hidden;
-            box-sizing: border-box;
-            font-family: 'Inter', -apple-system, sans-serif;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* --- THEME DEFINITIONS (CSS VARIABLES) --- */
-        :root {
-            /* Default: DARK STYLE (Enterprise Preferred) */
-            --bg: #030405; 
-            --text-main: #FFFFFF; 
-            --text-sub: rgba(255,255,255,0.6);
-            --accent: #15FF37; 
-            --ui-element: rgba(255,255,255,0.08);
-        }
-
-        .theme-grey {
-            --bg: #1A1C1F; 
-            --text-main: #F0F2F5; 
-            --text-sub: rgba(240,242,245,0.7);
-            --accent: #4BA3FF; 
-            --ui-element: rgba(240,242,245,0.1);
-        }
-
-        .theme-white {
-            --bg: #FAFBFC; 
-            --text-main: #101214; 
-            --text-sub: rgba(16,18,20,0.7);
-            --accent: #2E7FFD; 
-            --ui-element: rgba(16,18,20,0.06);
-        }
-
-        /* --- MAIN LAYOUT --- */
-        .hg-lounge-wrapper {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            width: 100vw;
-            background-color: var(--bg);
-            color: var(--text-main);
-            transition: background 0.3s ease;
-        }
-
-        /* Top Header Branding */
-        .hg-header {
-            padding: 1.5rem 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            font-weight: 800;
-            font-size: 1.1rem;
-            letter-spacing: -0.5px;
-            color: var(--accent);
-            opacity: 0.9;
-        }
-
-        /* Central Verification Area */
-        .hg-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 2rem;
-        }
-
-        /* Footer Branding */
-        .hg-footer {
-            padding: 1.5rem 2rem;
-            text-align: center;
-            font-size: 0.75rem;
-            color: var(--text-sub);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* --- STATUS ELEMENTS --- */
-
-        /* Sophisticated Dual-Ring Spinner */
-        .hg-status-visual {
-            position: relative;
-            width: 64px;
-            height: 64px;
-            margin-bottom: 2rem;
-        }
-        .hg-spinner-inner, .hg-spinner-outer {
-            position: absolute;
-            border-radius: 50%;
-            border: 2px solid transparent;
-            animation: spin 1s linear infinite;
-        }
-        .hg-spinner-inner {
-            top: 8px; left: 8px; width: 44px; height: 44px;
-            border-top-color: var(--accent); border-bottom-color: var(--accent);
-            animation-duration: 1s; animation-direction: reverse;
-        }
-        .hg-spinner-outer {
-            top: 0; left: 0; width: 60px; height: 60px;
-            border-left-color: var(--accent); border-right-color: var(--accent);
-            animation-duration: 2s;
-        }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-
-        /* Typography */
-        .hg-status-text h1 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin: 0 0 0.5rem 0;
-            letter-spacing: -0.2px;
-        }
-        .hg-status-text p {
-            font-size: 1rem;
-            color: var(--text-sub);
-            max-width: 480px;
-            line-height: 1.6;
-            margin: 0 0 3rem 0;
-        }
-
-        /* --- WIDGET CONTAINER --- */
-        #hashgate-lounge-widget {
+            margin: 0;
+            padding: 0;
+            height: 100%;
             width: 100%;
-            max-width: 420px;
-            min-height: 80px; /* Placeholder space */
-            padding: 1rem;
-            border-radius: 12px;
-            background-color: var(--ui-element);
+            background-color: #0e0e0e; /* Sfondo scuro richiesto */
+            color: #d9d9d9;
+            font-family: -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             display: flex;
-            align-items: center;
             justify-content: center;
-            font-family: monospace;
-            font-size: 0.85rem;
-            color: var(--text-sub);
-            border: 1px dashed rgba(var(--text-sub), 0.3);
+            align-items: center;
+            overflow: hidden; /* Previene barre di scorrimento indesiderate */
+        }
+
+        /* Contenitore principale centrato */
+        .main-challenge-container {
+            text-align: center;
+            padding: 20px;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        /* Stile per il logo ufficiale */
+        .hashgate-logo {
+            max-width: 200px;
+            height: auto;
+            margin-bottom: 40px;
+        }
+
+        /* Stile per i titoli */
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #ffffff;
+            margin-bottom: 10px;
+            letter-spacing: -0.02em;
+        }
+
+        /* Stile per il sottotitolo/descrizione */
+        .description {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #8c8c8c;
+            margin-bottom: 30px;
+        }
+
+        /* Area del widget */
+        .widget-area {
+            min-height: 100px; /* Spazio per il caricamento del widget */
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
     </style>
 </head>
+<body>
 
-<body class="theme-dark">
+    <div class="main-challenge-container">
+        <img src="https://api.hashgate.net/cdn/static/logo.webp" alt="Hashgate Logo" class="hashgate-logo">
 
-    <div class="hg-lounge-wrapper">
-        
-        <header class="hg-header">
-            🛡️ HASHGATE SECURITY
-        </header>
+        <h1>Verifica della connessione</h1>
+        <p class="description">
+            Stiamo verificando la sicurezza della tua connessione. Questo processo è automatico e richiede solo un istante.
+        </p>
 
-        <main class="hg-content">
-            
-            <div class="hg-status-visual">
-                <div class="hg-spinner-inner"></div>
-                <div class="hg-spinner-outer"></div>
-            </div>
-
-            <div class="hg-status-text">
-                <h1>Verifica della connessione...</h1>
-                <p>
-                    Stiamo analizzando la sicurezza del tuo browser per garantire l'integrità del nodo.
-                    Il processo è automatico e richiederà solo pochi istanti.
-                    <br><strong>Non chiudere la pagina.</strong>
-                </p>
-            </div>
-
+        <div class="widget-area">
             <div id="hashgate-container" data-mode="redirect" data-sitekey="pk_live_1234"></div>
-                IN ATTESA DI AUTENTICAZIONE
-            </div>
-
-        </main>
-
-        <footer class="hg-footer">
-            Secured by HashGate Zero-Trust Engine | EST. 2026
-        </footer>
-
+        </div>
     </div>
 
     <script src="https://api.hashgate.net/cdn/javascript/hashgate.js"></script>
+
 </body>
 </html>
