@@ -38,59 +38,67 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error("System Crash: API Key mancante (data-sitekey).");
     }
 
-    const hgTheme = container.getAttribute('data-theme') || 'dark';
+    const hgTheme = container.getAttribute('data-theme') || 'modern-dark';
+    
+    // --- CONFIGURAZIONE TEMI ---
+    const themes = {
+        'modern-dark':    { bg: '#141417', border: '#2a2a30', text: '#ffffff', accent: '#00ff88', radius: '12px', shadow: '0 8px 24px rgba(0,0,0,0.12)' },
+        'modern-light':   { bg: '#ffffff', border: '#e0e0e0', text: '#1a1a1a', accent: '#00ff88', radius: '12px', shadow: '0 4px 12px rgba(0,0,0,0.05)' },
+        'modern-orange':  { bg: '#141417', border: '#2a2a30', text: '#ffffff', accent: '#ff8800', radius: '12px', shadow: '0 8px 24px rgba(0,0,0,0.12)' },
+        'modern-blue':    { bg: '#141417', border: '#2a2a30', text: '#ffffff', accent: '#0088ff', radius: '12px', shadow: '0 8px 24px rgba(0,0,0,0.12)' },
+        'old':            { bg: '#f9f9f9', border: '#d1d1d1', text: '#222222', accent: '#0547ad', radius: '2px',  shadow: 'none' },
+        'old-orange':     { bg: '#f9f9f9', border: '#d1d1d1', text: '#222222', accent: '#f68b1f', radius: '2px',  shadow: 'none' },
+        'old-blue':       { bg: '#f9f9f9', border: '#d1d1d1', text: '#222222', accent: '#0070f3', radius: '2px',  shadow: 'none' }
+    };
+
+    const t = themes[hgTheme] || themes['modern-dark'];
+
     const stili = `
         :root {
-            --hg-bg: ${hgTheme === 'dark' ? '#141417' : '#ffffff'};
-            --hg-border: ${hgTheme === 'dark' ? '#2a2a30' : '#e0e0e0'};
-            --hg-text: ${hgTheme === 'dark' ? '#ffffff' : '#1a1a1a'};
-            --hg-text-dim: ${hgTheme === 'dark' ? '#90909a' : '#666666'};
-            --hg-accent: #00ff88;
+            --hg-bg: ${t.bg};
+            --hg-border: ${t.border};
+            --hg-text: ${t.text};
+            --hg-text-dim: ${hgTheme.includes('dark') ? '#90909a' : '#666666'};
+            --hg-accent: ${t.accent};
             --hg-error: #ff4444;
-            --hg-btn-bg: ${hgTheme === 'dark' ? '#0a0a0c' : '#f5f5f7'};
+            --hg-btn-bg: ${hgTheme.includes('dark') ? '#0a0a0c' : '#ffffff'};
+            --hg-radius: ${t.radius};
+            --hg-shadow: ${t.shadow};
         }
+
         #hashgate-widget { 
             display: flex; align-items: center; width: 100%; max-width: 360px; 
             background: var(--hg-bg); border: 1px solid var(--hg-border); 
-            border-radius: 12px; padding: 12px 18px; box-sizing: border-box; 
-            font-family: 'Inter', system-ui, sans-serif; 
-            box-shadow: 0 8px 24px rgba(0,0,0,0.12); 
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            border-radius: var(--hg-radius); padding: 12px 18px; box-sizing: border-box; 
+            font-family: 'Inter', system-ui, -apple-system, sans-serif; 
+            box-shadow: var(--hg-shadow); 
+            transition: all 0.3s ease;
             position: relative; overflow: hidden;
         }
-        .hg-checkbox-area { margin-right: 15px; display: flex; align-items: center; position: relative; }
+
         #hg-verify-btn { 
             width: 32px; height: 32px; background: var(--hg-btn-bg); 
-            border: 2px solid var(--hg-border); border-radius: 8px; 
-            cursor: pointer; transition: all 0.3s; position: relative;
+            border: 2px solid var(--hg-border); border-radius: ${hgTheme.includes('modern') ? '8px' : '2px'}; 
+            cursor: pointer; transition: all 0.2s; position: relative;
             background-size: 60%; background-position: center; background-repeat: no-repeat;
         }
-        #hg-verify-btn:hover { border-color: var(--hg-accent); transform: scale(1.05); }
-        #hg-verify-btn.mining { 
-            border-radius: 50%; border-color: transparent;
-            background-image: url('https://api.hashgate.net/cdn/static/loading.gif'); 
-            background-size: cover; cursor: wait; 
-        }
+
+        #hg-verify-btn:hover { border-color: var(--hg-accent); }
+
         #hashgate-widget.passed #hg-verify-btn { 
             background-color: transparent; border-color: var(--hg-accent);
             background-image: url('https://api.hashgate.net/cdn/static/success.gif');
-            background-size: 100%; background-repeat: no-repeat;
+            background-size: 100%;
         }
-        #hashgate-widget.passed.frozen #hg-verify-btn { 
-            background-image: url('https://api.hashgate.net/cdn/static/success.png');
-        }
-        #hashgate-widget.poisoned #hg-verify-btn { 
-            background-color: transparent; border-color: var(--hg-error);
-            background-image: url('https://api.hashgate.net/cdn/static/error.png');
-            background-size: 70%;
-        }
-        .hg-text-area { flex-grow: 1; display: flex; flex-direction: column; }
-        #hg-status { font-size: 0.95rem; font-weight: 600; color: var(--hg-text); }
-        #hg-log { font-size: 0.75rem; color: var(--hg-text-dim); margin-top: 2px; }
-        .hg-brand-area { display: flex; flex-direction: column; align-items: flex-end; opacity: 0.8; }
-        .hg-brand-logo { width: 22px; height: 22px; margin-bottom: 4px; }
+
+        /* Testi e Brand */
+        .hg-text-area { flex-grow: 1; display: flex; flex-direction: column; margin-left: 10px; }
+        #hg-status { font-size: 0.9rem; font-weight: 600; color: var(--hg-text); }
+        #hg-log { font-size: 0.7rem; color: var(--hg-text-dim); margin-top: 1px; }
+
+        .hg-brand-area { display: flex; flex-direction: column; align-items: flex-end; opacity: 0.7; }
+        .hg-brand-logo { width: 18px; height: 18px; filter: ${hgTheme.includes('dark') ? 'none' : 'grayscale(1) contrast(1.2)'}; }
     `;
-    document.head.insertAdjacentHTML('beforeend', `<style>${stili}</style>`);
 
     container.innerHTML = `
         <div id="hashgate-widget" class="hg-${hgTheme}">
