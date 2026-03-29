@@ -33,55 +33,61 @@ document.addEventListener("DOMContentLoaded", () => {
     const hgMode = container.getAttribute('data-mode') || 'form'; 
     const hgRedirectUrl = container.getAttribute('data-url') || '/';
     const siteKey = container.getAttribute('data-sitekey');
-    
-    if (!siteKey) {
-        console.error("System Crash: API Key mancante (data-sitekey).");
-    }
+    const hgTheme = container.getAttribute('data-theme') || 'modern-dark';
 
-    // 1. Creiamo la "Bolla di Isolamento" (Shadow DOM)
-    // 1. Inizializziamo lo Shadow DOM (La bolla di isolamento)
-    const shadow = container.attachShadow({mode: 'open'});
-
-    // 2. Mappa dei Temi (Modern vs Old)
     const themes = {
-        'modern-dark':   { bg: '#141417', border: '#2a2a30', text: '#ffffff', accent: '#00ff88', radius: '12px' },
-        'modern-orange': { bg: '#141417', border: '#2a2a30', text: '#ffffff', accent: '#ff8800', radius: '12px' },
-        'modern-blue':   { bg: '#141417', border: '#2a2a30', text: '#ffffff', accent: '#0088ff', radius: '12px' },
-        'old':           { bg: '#f9f9f9', border: '#d1d1d1', text: '#222222', accent: '#0547ad', radius: '2px'  },
-        'old-orange':    { bg: '#f9f9f9', border: '#d1d1d1', text: '#222222', accent: '#f68b1f', radius: '2px'  },
-        'old-blue':      { bg: '#f9f9f9', border: '#d1d1d1', text: '#222222', accent: '#0070f3', radius: '2px'  }
+        'modern-dark':    { bg: '#141417', border: '#2a2a30', text: '#ffffff', accent: '#00ff88', radius: '12px', shadow: '0 8px 24px rgba(0,0,0,0.12)' },
+        'modern-orange':  { bg: '#141417', border: '#2a2a30', text: '#ffffff', accent: '#ff8800', radius: '12px', shadow: '0 8px 24px rgba(0,0,0,0.12)' },
+        'modern-blue':    { bg: '#141417', border: '#2a2a30', text: '#ffffff', accent: '#0088ff', radius: '12px', shadow: '0 8px 24px rgba(0,0,0,0.12)' },
+        'old':            { bg: '#f9f9f9', border: '#d1d1d1', text: '#222222', accent: '#0547ad', radius: '2px',  shadow: 'none' },
+        'old-orange':     { bg: '#f9f9f9', border: '#d1d1d1', text: '#222222', accent: '#f68b1f', radius: '2px',  shadow: 'none' },
+        'old-blue':       { bg: '#f9f9f9', border: '#d1d1d1', text: '#222222', accent: '#0070f3', radius: '2px',  shadow: 'none' }
     };
     const t = themes[hgTheme] || themes['modern-dark'];
 
-    // 3. Stili Interni (Blindati)
+    const shadow = container.attachShadow({mode: 'open'});
+
     const styleTag = document.createElement('style');
     styleTag.textContent = `
-        :host { display: block; width: 360px; height: 65px; margin: 10px 0; }
+        :host { display: block; width: 360px; height: 65px; margin: 10px 0; contain: content; }
         .hg-wrapper {
             display: flex; align-items: center; justify-content: space-between;
             width: 360px; height: 65px; padding: 0 15px; box-sizing: border-box;
             background: ${t.bg}; border: 1px solid ${t.border}; border-radius: ${t.radius};
-            box-shadow: 0 8px 24px rgba(0,0,0,0.15); font-family: sans-serif;
-            position: relative; overflow: hidden; color: ${t.text};
+            box-shadow: ${t.shadow}; font-family: 'Inter', system-ui, sans-serif;
+            position: relative; overflow: hidden; color: ${t.text}; transition: all 0.3s ease;
         }
-        .hg-checkbox-area { width: 35px; display: flex; align-items: center; }
+        .hg-checkbox-area { width: 35px; display: flex; align-items: center; flex-shrink: 0; }
         #hg-verify-btn {
             width: 28px; height: 28px; background: ${hgTheme.includes('dark') ? '#0a0a0c' : '#ffffff'};
             border: 2px solid ${t.border}; border-radius: ${hgTheme.includes('modern') ? '6px' : '0px'};
             cursor: pointer; transition: 0.2s; background-size: 0; background-repeat: no-repeat;
         }
-        #hg-verify-btn.mining { background-image: url('https://api.hashgate.net/cdn/static/loading.gif'); background-size: cover; border-color: transparent; }
-        .passed #hg-verify-btn { background-image: url('https://api.hashgate.net/cdn/static/success.gif'); background-size: 100%; border-color: ${t.accent}; }
-        .hg-text-area { flex-grow: 1; display: flex; flex-direction: column; margin-left: 12px; }
-        .hg-status { font-size: 14px; font-weight: 600; margin: 0; line-height: 1.2; }
-        .hg-log { font-size: 11px; color: ${hgTheme.includes('dark') ? '#90909a' : '#666666'}; margin-top: 2px; }
-        .hg-brand-area { display: flex; flex-direction: column; align-items: flex-end; width: 80px; }
+        #hg-verify-btn:hover { border-color: ${t.accent}; transform: scale(1.05); }
+        #hg-verify-btn.mining { 
+            background-image: url('https://api.hashgate.net/cdn/static/loading.gif'); 
+            background-size: cover; border-color: transparent; border-radius: 50%;
+        }
+        .passed #hg-verify-btn { 
+            background-image: url('https://api.hashgate.net/cdn/static/success.gif'); 
+            background-size: 100%; border-color: ${t.accent}; background-color: transparent;
+        }
+        .frozen #hg-verify-btn { background-image: url('https://api.hashgate.net/cdn/static/success.png'); }
+        .hg-text-area { flex-grow: 1; display: flex; flex-direction: column; margin-left: 12px; overflow: hidden; }
+        .hg-status { font-size: 14px; font-weight: 600; margin: 0; line-height: 1.2; white-space: nowrap; }
+        .hg-log { font-size: 11px; color: ${hgTheme.includes('dark') ? '#90909a' : '#666666'}; margin-top: 2px; white-space: nowrap; }
+        .hg-brand-area { display: flex; flex-direction: column; align-items: flex-end; width: 80px; flex-shrink: 0; opacity: 0.8; }
         .hg-logo { width: 22px; height: 22px; margin-bottom: 4px; object-fit: contain; }
-        .hg-links { display: flex; gap: 8px; font-size: 9px; opacity: 0.7; }
-        .hg-links a { color: inherit; text-decoration: none; }
+        .hg-links { display: flex; gap: 8px; font-size: 9px; }
+        .hg-links a { color: inherit; text-decoration: none; opacity: 0.7; }
+        .hg-links a:hover { opacity: 1; color: ${t.accent}; }
+        .hg-token-input { display: none; }
+        .poisoned { border-color: #ff4444 !important; }
+        .poisoned #hg-verify-btn { border-color: #ff4444; background-image: url('https://api.hashgate.net/cdn/static/error.png'); background-size: 70%; }
     `;
 
-    // 4. HTML Interno
+    const widget = document.createElement('div');
+    widget.id = 'hashgate-widget';
     widget.className = 'hg-wrapper';
     widget.innerHTML = `
         <div class="hg-checkbox-area">
@@ -98,57 +104,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 <a href="#">Terms</a>
             </div>
         </div>
-        <input type="hidden" id="hg-token">
+        <input type="hidden" id="hg-token" class="hg-token-input">
     `;
 
-    // 5. Iniezione nella Shadow Root
     shadow.appendChild(styleTag);
     shadow.appendChild(widget);
 
-    // 6. Definiamo i riferimenti per il resto dello script
-    // NOTA: Usiamo "shadow.querySelector" perché gli elementi sono dentro la bolla!
     const btn = shadow.querySelector('#hg-verify-btn');
     const statusEl = shadow.querySelector('#hg-status');
     const logEl = shadow.querySelector('#hg-log');
     const tokenInput = shadow.querySelector('#hg-token');
-
-    // 5. Montaggio
-    shadow.appendChild(styleTag);
-    shadow.appendChild(widgetHTML);
-
-    // 6. Ricolleghiamo i riferimenti (Fondamentale!)
-    
-    document.head.insertAdjacentHTML('beforeend', `<style>${stili}</style>`);
-
-   
-    container.innerHTML = `
-        <div id="hashgate-widget" class="hg-${hgTheme}">
-            <div class="hg-checkbox-area">
-                <button type="button" id="hg-verify-btn"></button>
-            </div>
-            
-            <div class="hg-text-area">
-                <div id="hg-status">Security Check</div>
-                <div id="hg-log">Verify your identity</div>
-            </div>
-            
-            <div class="hg-brand-area">
-                <img src="https://api.hashgate.net/cdn/static/logo.webp" class="hg-brand-logo" alt="HG">
-                <div class="hg-links" style="font-size: 0.6rem; color: var(--hg-text-dim); display: flex; gap: 8px;">
-                    <a href="#" style="color: inherit; text-decoration: none;">Privacy</a>
-                    <a href="#" style="color: inherit; text-decoration: none;">Terms</a>
-                </div>
-            </div>
-            
-            <input type="hidden" id="hg-token" name="hg-token">
-        </div>
-    `;
-
-
-    const btn = container.querySelector('#hg-verify-btn');
-    const statusEl = container.querySelector('#hg-status');
-    const logEl = container.querySelector('#hg-log');
-    const tokenInput = container.querySelector('#hg-token');
     
     const form = container.closest('form');
     const submitBtn = form ? form.querySelector('button[type="submit"], input[type="submit"]') : document.getElementById('submit-btn');
@@ -156,19 +121,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- CONTROLLO PERSISTENZA ---
     const hgState = localStorage.getItem('hashgate_verified');
-
     if (hgState === 'true') {
-        widget.classList.add('passed');
-        btn.innerText = "";
-        btn.disabled = true;
+        widget.classList.add('passed', 'frozen');
         statusEl.innerText = "Verifica completata";
         logEl.innerText = "Sicurezza fornita da HashGate.net";
         tokenInput.value = "token_locale_valido"; 
         if (hgMode === 'form' && submitBtn) submitBtn.disabled = false;
-        else if (hgMode === 'redirect') {
-            logEl.innerText = "Sessione valida. Reindirizzamento...";
-            setTimeout(() => { window.location.href = hgRedirectUrl; }, 1000);
-        }
+        else if (hgMode === 'redirect') setTimeout(() => { window.location.href = hgRedirectUrl; }, 1000);
+    } else if (hgState === 'false') {
+        widget.classList.add('poisoned');
+        statusEl.innerText = "Accesso Negato";
+        statusEl.style.color = "red";
+    } else {
+        inizializzaSensori();
+    }
     } else if (hgState === 'false') {
         widget.classList.add('poisoned');
         btn.innerText = "pois";
