@@ -124,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
             setTimeout(() => { window.location.href = hgRedirectUrl; }, 1000);
         }
 
-    } else if (hgState === 'false') {
+    }   else if (hgState === 'false') {
         widget.classList.add('poisoned');
         btn.innerText = "pois";
         btn.disabled = true;
