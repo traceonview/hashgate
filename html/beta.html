@@ -2,68 +2,28 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HashGate - Theme Showcase</title>
     <script src="https://api.hashgate.net/cdn/hashgate.js"></script>
     <style>
-        body { 
-            background: #0a0a0c; color: #fff; font-family: 'Inter', sans-serif; 
-            padding: 40px; display: flex; flex-direction: column; align-items: center;
-        }
-        h1 { margin-bottom: 10px; color: #00ff88; }
-        p { color: #90909a; margin-bottom: 40px; }
-        
-        .demo-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-            gap: 30px; width: 100%; max-width: 1200px;
-        }
-        .theme-card {
-            background: #141417; border: 1px solid #2a2a30;
-            padding: 20px; border-radius: 16px;
-            display: flex; flex-direction: column; gap: 15px;
-        }
-        .theme-name { font-weight: bold; font-size: 0.9rem; color: #00ff88; text-transform: uppercase; }
+        body { margin: 0; padding: 10px; display: flex; align-items: center; justify-content: center; background: transparent; }
     </style>
 </head>
 <body>
+    <script>
+        // Leggiamo i parametri dall'URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const siteKey = urlParams.get('sitekey') || 'pk_live_1234'; // API Key di default
+        const theme = urlParams.get('theme') || 'modern-dark';
 
-    <h1>HashGate Fortress Showcase</h1>
-    <p>Seleziona il look per il tuo nodo di sicurezza. API Key: pk_live_1234</p>
-
-    <div class="demo-grid">
+        // Creiamo e iniettiamo il div container primordiale
+        const container = document.createElement('div');
+        container.id = 'hashgate-container';
+        container.setAttribute('data-sitekey', siteKey);
+        container.setAttribute('data-theme', theme);
+        container.setAttribute('data-mode', 'form'); // default per demo
         
-        <div class="theme-card">
-            <div class="theme-name">Modern Dark (Default)</div>
-            <div id="hashgate-container" data-sitekey="pk_live_1234" data-theme="modern-dark"></div>
-        </div>
+        document.body.appendChild(container);
+    </script>
 
-        <div class="theme-card">
-            <div class="theme-name">Modern Orange</div>
-            <div id="hashgate-container" data-sitekey="pk_live_1234" data-theme="modern-orange"></div>
-        </div>
-
-        <div class="theme-card">
-            <div class="theme-name">Modern Blue</div>
-            <div id="hashgate-container" data-sitekey="pk_live_1234" data-theme="modern-blue"></div>
-        </div>
-
-        <div class="theme-card">
-            <div class="theme-name">Old Enterprise</div>
-            <div id="hashgate-container" data-sitekey="pk_live_1234" data-theme="old"></div>
-        </div>
-
-        <div class="theme-card">
-            <div class="theme-name">Old Orange</div>
-            <div id="hashgate-container" data-sitekey="pk_live_1234" data-theme="old-orange"></div>
-        </div>
-
-        <div class="theme-card">
-            <div class="theme-name">Old Blue</div>
-            <div id="hashgate-container" data-sitekey="pk_live_1234" data-theme="old-blue"></div>
-        </div>
-
-    </div>
 <script src="https://api.hashgate.net/cdn/javascript/hashgate.js?v=mailsense9"></script>
 </body>
 </html>
