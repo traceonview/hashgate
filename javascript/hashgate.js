@@ -185,6 +185,31 @@ document.addEventListener("DOMContentLoaded", () => {
         inizializzaSensori();
     }
 
+    // --- WebGL Fingerprinting ---
+    function ottieniWebGLFingerprint() {
+        try {
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            if (!gl) return "no_webgl";
+            const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+            const vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
+            const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+            return `${vendor}::${renderer}`;
+        } catch (e) {
+            return "error_webgl";
+        }
+    }
+    function inviaTelemetria(esito, dettaglio) {
+        const siteKey = container.getAttribute('data-sitekey');
+        if (!siteKey) return;
+        
+        fetch(`${API_BASE_URL}/telemetry`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-hashgate-key': siteKey },
+            body: JSON.stringify({ esito: esito, dettaglio: dettaglio })
+        }).catch(() => console.log("log - Telemetry ignorata"));
+    }
+
     // --- logica e sensori con supporto mobile ---
     // --- logica e sensori con supporto mobile avanzato ---
     function inizializzaSensori() {
@@ -224,8 +249,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (!e.isTrusted || timeToClick < 300) {
                 localStorage.setItem('hashgate_verified', 'false');
+                inviaTelemetria('blocked', 'fast_click_or_untrusted'); 
                 setTimeout(() => { window.location.reload(); }, 1500); 
                 return; 
+            }
             }
 
             if (entropyScore < MIN_ENTROPY) {
@@ -263,14 +290,18 @@ document.addEventListener("DOMContentLoaded", () => {
             const siteKey = container.getAttribute('data-sitekey');
             if (!siteKey) throw new Error("Nessuna API Key fornita dal client.");
 
-           
+            const gpuData = ottieniWebGLFingerprint();
+            const payload = { 
+                entropy_signature: entropySignature,
+                hardware_fp: gpuData 
+            };
             const response = await fetch(`${API_BASE_URL}/challenge`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
-                    'x-hashgate-key': siteKey 
+                    'x-hashgate-key': siteKey
                 },
-                body: JSON.stringify({ entropy_signature: entropySignature })
+                body: JSON.stringify(payload)
             });
             
             if (!response.ok) throw new Error("API Rifiutata o Key non valida");
@@ -350,14 +381,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function validaRisultato(salt, nonce) {
         try {
+            const siteKey = container.getAttribute('data-sitekey');
+            if (!siteKey) throw new Error("API Key mancante durante la verifica.");
+
             const response = await fetch(`${API_BASE_URL}/verify`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'x-hashgate-key': siteKey
+                },
                 body: JSON.stringify({ salt: salt, nonce: nonce })
             });
             const data = await response.json();
 
-            // INIZIO BLOCCO IF PRINCIPALE
             if (data.status === "success") {
                 localStorage.setItem('hashgate_verified', 'true'); 
                 widget.classList.add('passed');
@@ -369,7 +405,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 logEl.innerText = "Identità confermata.";
                 tokenInput.value = data.jwt_token; 
                 
-                // Sotto-blocco per le modalità
                 if (hgMode === 'form') {
                     if (submitBtn) submitBtn.disabled = false;
                 } else if (hgMode === 'redirect') {
@@ -377,9 +412,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     logEl.innerText = "Reindirizzamento in corso...";
                     setTimeout(() => { window.location.href = hgRedirectUrl; }, 1000);
                 }
-            // FINE BLOCCO IF PRINCIPALE, INIZIO ELSE
             } else {
-                throw new Error("Hash Rifiutato");
+                throw new Error(data.message || "Hash Rifiutato dal Server");
             }
 
         } catch (error) {
