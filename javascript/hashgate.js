@@ -1,10 +1,16 @@
 /**
  * ============================================================================
- * HashGate security - HASHGATE.JS V2
+ * HashGate security - HASHGATE.JS V1
  * ============================================================================
- * @version 2.0.0
+ * @version 1.0.0
  * @author Trace Wilson | HashGate Security
  * @copyright 2026 HashGate. All rights reserved.
+ * * Stop automated threats. Protect your APIs and Forms organically.
+ * 🌐 Web: https://hashgate.net
+ * 💬 Community & Support: https://discord.gg/hashgate
+ * 📚 Docs: https://hashgate.net/docs/javascript/hashgate
+ * * WARNING: Reverse engineering or tampering with this payload may 
+ * trigger an automatic IP Strict-Lock. 
  * ============================================================================
  */
 
