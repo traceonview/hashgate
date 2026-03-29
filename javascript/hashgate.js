@@ -281,7 +281,7 @@ document.addEventListener("DOMContentLoaded", () => {
             document.removeEventListener('keydown', analizzaTastiera);
             
             avviaAutenticazione(entropyScore);
-        });
+        };
     }
 
     async function avviaAutenticazione(entropySignature) {
