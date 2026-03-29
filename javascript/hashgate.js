@@ -392,7 +392,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 },
                 body: JSON.stringify({ salt: salt, nonce: nonce })
             });
+            const response = await fetch(`${API_BASE_URL}/verify`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'x-hashgate-key': siteKey 
+                },
+                body: JSON.stringify({ salt: salt, nonce: nonce })
+            });
             const data = await response.json();
+            
+            console.log("LOG DI SISTEMA - Risposta Server:", data); 
 
             if (data.status === "success") {
                 localStorage.setItem('hashgate_verified', 'true'); 
