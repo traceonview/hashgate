@@ -38,77 +38,87 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error("System Crash: API Key mancante (data-sitekey).");
     }
 
-    const hgTheme = container.getAttribute('data-theme') || 'dark';
-    const stili = `
-        :root {
-            --hg-bg: ${hgTheme === 'dark' ? '#141417' : '#ffffff'};
-            --hg-border: ${hgTheme === 'dark' ? '#2a2a30' : '#e0e0e0'};
-            --hg-text: ${hgTheme === 'dark' ? '#ffffff' : '#1a1a1a'};
-            --hg-text-dim: ${hgTheme === 'dark' ? '#90909a' : '#666666'};
-            --hg-accent: #00ff88;
-            --hg-error: #ff4444;
-            --hg-btn-bg: ${hgTheme === 'dark' ? '#0a0a0c' : '#f5f5f7'};
-        }
+    // 1. Creiamo la "Bolla di Isolamento" (Shadow DOM)
+    const shadow = container.attachShadow({mode: 'open'});
 
-        #hashgate-widget { 
-            display: flex; align-items: center; width: 100%; max-width: 360px; 
-            background: var(--hg-bg); border: 1px solid var(--hg-border); 
-            border-radius: 12px; padding: 12px 18px; box-sizing: border-box; 
-            font-family: 'Inter', system-ui, sans-serif; 
-            box-shadow: 0 8px 24px rgba(0,0,0,0.12); 
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            position: relative; overflow: hidden;
-        }
+    // 2. Definiamo i colori del tema
+    const themes = {
+        'modern-dark':   { bg: '#141417', border: '#2a2a30', text: '#ffffff', accent: '#00ff88', radius: '12px' },
+        'modern-orange': { bg: '#141417', border: '#2a2a30', text: '#ffffff', accent: '#ff8800', radius: '12px' },
+        'modern-blue':   { bg: '#141417', border: '#2a2a30', text: '#ffffff', accent: '#0088ff', radius: '12px' },
+        'old':           { bg: '#f9f9f9', border: '#d1d1d1', text: '#222222', accent: '#0547ad', radius: '2px'  },
+        'old-orange':    { bg: '#f9f9f9', border: '#d1d1d1', text: '#222222', accent: '#f68b1f', radius: '2px'  },
+        'old-blue':      { bg: '#f9f9f9', border: '#d1d1d1', text: '#222222', accent: '#0070f3', radius: '2px'  }
+    };
+    const t = themes[hgTheme] || themes['modern-dark'];
 
-        /* Area Checkbox con Immagini */
-        .hg-checkbox-area { margin-right: 15px; display: flex; align-items: center; position: relative; }
+    // 3. CSS INTERNO ALLA BOLLA (Inattaccabile dall'esterno)
+    const styleTag = document.createElement('style');
+    styleTag.textContent = `
+        :host { display: block; width: 360px; height: 65px; contain: content; }
         
-        #hg-verify-btn { 
-            width: 32px; height: 32px; background: var(--hg-btn-bg); 
-            border: 2px solid var(--hg-border); border-radius: 8px; 
-            cursor: pointer; transition: all 0.3s; position: relative;
-            background-size: 60%; background-position: center; background-repeat: no-repeat;
+        .hg-wrapper {
+            display: flex; align-items: center; justify-content: space-between;
+            width: 360px; height: 65px; padding: 0 15px; box-sizing: border-box;
+            background: ${t.bg}; border: 1px solid ${t.border}; border-radius: ${t.radius};
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15); font-family: sans-serif;
+            position: relative; overflow: hidden; color: ${t.text};
         }
 
-        #hg-verify-btn:hover { border-color: var(--hg-accent); transform: scale(1.05); }
+        .hg-checkbox-area { width: 35px; display: flex; align-items: center; }
+        
+        #hg-verify-btn {
+            width: 28px; height: 28px; background: ${hgTheme.includes('dark') ? '#0a0a0c' : '#ffffff'};
+            border: 2px solid ${t.border}; border-radius: ${hgTheme.includes('modern') ? '6px' : '0px'};
+            cursor: pointer; transition: 0.2s; position: relative;
+        }
 
-        /* Stati Animati con immagini */
         #hg-verify-btn.mining { 
-            border-radius: 50%; border-color: transparent;
             background-image: url('https://api.hashgate.net/cdn/static/loading.gif'); 
-            background-size: cover; cursor: wait; 
+            background-size: cover; border-color: transparent; 
         }
 
-        
-        /* success con gif */
-        #hashgate-widget.passed #hg-verify-btn { 
-            background-color: transparent;
-            border-color: var(--hg-accent);
-            background-image: url('https://api.hashgate.net/cdn/static/success.gif');
-            background-size: 100%;
-            background-repeat: no-repeat;
-        }
+        .hg-text-area { flex-grow: 1; display: flex; flex-direction: column; margin-left: 12px; }
+        .hg-status { font-size: 14px; font-weight: 600; margin: 0; line-height: 1.2; }
+        .hg-log { font-size: 11px; color: ${hgTheme.includes('dark') ? '#90909a' : '#666666'}; margin-top: 2px; }
 
-        /* success con png */
-        #hashgate-widget.passed.frozen #hg-verify-btn { 
-            background-image: url('https://api.hashgate.net/cdn/static/success.png');
-        }
-        
-        #hashgate-widget.poisoned #hg-verify-btn { 
-            background-color: transparent; 
-            border-color: var(--hg-error);
-            background-image: url('https://api.hashgate.net/cdn/static/error.png');
-            background-size: 70%;
-        }
-
-        /* Testi e Brand */
-        .hg-text-area { flex-grow: 1; display: flex; flex-direction: column; }
-        #hg-status { font-size: 0.95rem; font-weight: 600; color: var(--hg-text); }
-        #hg-log { font-size: 0.75rem; color: var(--hg-text-dim); margin-top: 2px; }
-
-        .hg-brand-area { display: flex; flex-direction: column; align-items: flex-end; opacity: 0.8; }
-        .hg-brand-logo { width: 22px; height: 22px; margin-bottom: 4px; }
+        .hg-brand-area { display: flex; flex-direction: column; align-items: flex-end; width: 80px; }
+        .hg-logo { width: 22px; height: 22px; margin-bottom: 4px; object-fit: contain; }
+        .hg-links { display: flex; gap: 8px; font-size: 9px; opacity: 0.7; }
+        .hg-links a { color: inherit; text-decoration: none; }
     `;
+
+    // 4. HTML INTERNO ALLA BOLLA
+    const widgetHTML = document.createElement('div');
+    widgetHTML.className = 'hg-wrapper';
+    widgetHTML.innerHTML = `
+        <div class="hg-checkbox-area">
+            <button type="button" id="hg-verify-btn"></button>
+        </div>
+        <div class="hg-text-area">
+            <div class="hg-status" id="hg-status">Security Check</div>
+            <div class="hg-log" id="hg-log">Verify your identity</div>
+        </div>
+        <div class="hg-brand-area">
+            <img src="https://api.hashgate.net/cdn/static/logo.webp" class="hg-logo" alt="HG">
+            <div class="hg-links">
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+            </div>
+        </div>
+        <input type="hidden" id="hg-token">
+    `;
+
+    // 5. Montaggio
+    shadow.appendChild(styleTag);
+    shadow.appendChild(widgetHTML);
+
+    // 6. Ricolleghiamo i riferimenti (Fondamentale!)
+    const widget = widgetHTML; 
+    const btn = shadow.querySelector('#hg-verify-btn');
+    const statusEl = shadow.querySelector('#hg-status');
+    const logEl = shadow.querySelector('#hg-log');
+    const tokenInput = shadow.querySelector('#hg-token');
     document.head.insertAdjacentHTML('beforeend', `<style>${stili}</style>`);
 
    
