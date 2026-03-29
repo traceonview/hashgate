@@ -35,9 +35,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const hgRedirectUrl = container.getAttribute('data-url') || '/';
     const hgTheme = container.getAttribute('data-theme') || 'modern-dark';
 
-    // 1. Motore dei Temi e Asset Mapping
+    // 1. Inizializziamo lo Shadow DOM SUBITO (Questo previene l'errore "not defined")
+    const shadow = container.attachShadow({mode: 'open'});
+
+    // 2. Motore dei Temi e Asset Mapping
     const themes = {
-        // --- MODERN THEMES (Sfondi sfumati, ombre colorate) ---
         'modern-dark': { 
             bg: '#141417', border: '#2a2a30', text: '#ffffff', accent: '#00ff88', radius: '12px', shadow: '0 8px 24px rgba(0,0,0,0.2)',
             gifLoad: 'loading-green.gif', gifPass: 'success-green.gif', imgFail: 'error-red.png' 
@@ -50,8 +52,6 @@ document.addEventListener("DOMContentLoaded", () => {
             bg: '#12161a', border: '#1c2633', text: '#ffffff', accent: '#0088ff', radius: '12px', shadow: '0 8px 24px rgba(0,136,255,0.08)',
             gifLoad: 'loading-blue.gif', gifPass: 'success-blue.gif', imgFail: 'error-red.png' 
         },
-        
-        // --- OLD THEMES (Stile Cloudflare, grigi tattici, ombre interne) ---
         'old': { 
             bg: '#fcfcfc', border: '#d4d4d4', text: '#222222', accent: '#0547ad', radius: '2px', shadow: 'inset 0 1px 3px rgba(0,0,0,0.04)',
             gifLoad: 'loading-old.gif', gifPass: 'success-old.gif', imgFail: 'error-old.png' 
@@ -65,11 +65,11 @@ document.addEventListener("DOMContentLoaded", () => {
             gifLoad: 'loading-old-blue.gif', gifPass: 'success-old-blue.gif', imgFail: 'error-old.png' 
         }
     };
+    
     const t = themes[hgTheme] || themes['modern-dark'];
-    const cdn = 'https://api.hashgate.net/cdn/static/'; // Base URL per gli asset
-    const shadow = container.attachShadow({mode: 'open'});
+    const cdn = 'https://api.hashgate.net/cdn/static/'; 
 
-    // 2. CSS Interno con Iniezione Dinamica
+    // 3. Creazione e Iniezione CSS
     const styleTag = document.createElement('style');
     styleTag.textContent = `
         :host { display: block; width: 360px; height: 65px; margin: 10px 0; font-family: 'Inter', system-ui, sans-serif; }
@@ -89,7 +89,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         #hg-verify-btn:hover { border-color: ${t.accent}; }
         
-        /* --- ASSET DINAMICI DAL CDN --- */
         #hg-verify-btn.mining { 
             background-image: url('${cdn}${t.gifLoad}'); 
             background-size: cover; border-color: transparent; border-radius: 50%; 
@@ -107,14 +106,12 @@ document.addEventListener("DOMContentLoaded", () => {
         .hg-log { font-size: 11px; color: ${hgTheme.includes('old') ? '#666666' : '#90909a'}; margin-top: 2px; white-space: nowrap; }
         .hg-brand-area { display: flex; flex-direction: column; align-items: flex-end; width: 80px; flex-shrink: 0; }
         
-        /* Filtro dinamico per il logo: lo scuriamo sui temi bianchi */
         .hg-logo { width: 22px; height: 22px; margin-bottom: 4px; object-fit: contain; filter: ${hgTheme.includes('old') ? 'brightness(0.2)' : 'none'}; }
         
         .hg-links { display: flex; gap: 8px; font-size: 9px; opacity: 0.7; }
         .hg-links a { color: inherit; text-decoration: none; }
         .hg-links a:hover { color: ${t.accent}; opacity: 1; }
         
-        /* Poisoning Mode */
         .poisoned { border-color: #ff4444 !important; }
         .poisoned #hg-verify-btn { 
             border-color: #ff4444; background-image: url('${cdn}${t.imgFail}'); 
@@ -122,6 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     `;
 
+    // 4. Creazione e Iniezione HTML
     const widget = document.createElement('div');
     widget.className = 'hg-wrapper';
     widget.innerHTML = `
@@ -137,14 +135,17 @@ document.addEventListener("DOMContentLoaded", () => {
         <input type="hidden" id="hg-token">
     `;
 
+    // 5. Applichiamo tutto allo Shadow DOM
     shadow.appendChild(styleTag);
     shadow.appendChild(widget);
 
+    // 6. Riferimenti agli Elementi Interattivi
     const btn = shadow.querySelector('#hg-verify-btn');
     const statusEl = shadow.querySelector('#hg-status');
     const logEl = shadow.querySelector('#hg-log');
     const tokenInput = shadow.querySelector('#hg-token');
     
+    // 7. Gestione Form
     const form = container.closest('form');
     const submitBtn = form ? form.querySelector('button[type="submit"], input[type="submit"]') : document.getElementById('submit-btn');
     if (submitBtn && hgMode === 'form') submitBtn.disabled = true;
