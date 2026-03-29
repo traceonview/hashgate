@@ -67,6 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     const t = themes[hgTheme] || themes['modern-dark'];
     const cdn = 'https://api.hashgate.net/cdn/static/'; // Base URL per gli asset
+    const shadow = container.attachShadow({mode: 'open'});
 
     // 2. CSS Interno con Iniezione Dinamica
     const styleTag = document.createElement('style');
