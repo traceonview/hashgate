@@ -30,18 +30,18 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
+    const siteKey = container.getAttribute('data-sitekey');
     const hgMode = container.getAttribute('data-mode') || 'form'; 
     const hgRedirectUrl = container.getAttribute('data-url') || '/';
-    const siteKey = container.getAttribute('data-sitekey');
     const hgTheme = container.getAttribute('data-theme') || 'modern-dark';
 
     const themes = {
-        'modern-dark':    { bg: '#141417', border: '#2a2a30', text: '#ffffff', accent: '#00ff88', radius: '12px', shadow: '0 8px 24px rgba(0,0,0,0.12)' },
-        'modern-orange':  { bg: '#141417', border: '#2a2a30', text: '#ffffff', accent: '#ff8800', radius: '12px', shadow: '0 8px 24px rgba(0,0,0,0.12)' },
-        'modern-blue':    { bg: '#141417', border: '#2a2a30', text: '#ffffff', accent: '#0088ff', radius: '12px', shadow: '0 8px 24px rgba(0,0,0,0.12)' },
-        'old':            { bg: '#f9f9f9', border: '#d1d1d1', text: '#222222', accent: '#0547ad', radius: '2px',  shadow: 'none' },
-        'old-orange':     { bg: '#f9f9f9', border: '#d1d1d1', text: '#222222', accent: '#f68b1f', radius: '2px',  shadow: 'none' },
-        'old-blue':       { bg: '#f9f9f9', border: '#d1d1d1', text: '#222222', accent: '#0070f3', radius: '2px',  shadow: 'none' }
+        'modern-dark':   { bg: '#141417', border: '#2a2a30', text: '#ffffff', accent: '#00ff88', radius: '12px', shadow: '0 8px 24px rgba(0,0,0,0.15)' },
+        'modern-orange': { bg: '#141417', border: '#2a2a30', text: '#ffffff', accent: '#ff8800', radius: '12px', shadow: '0 8px 24px rgba(0,0,0,0.15)' },
+        'modern-blue':   { bg: '#141417', border: '#2a2a30', text: '#ffffff', accent: '#0088ff', radius: '12px', shadow: '0 8px 24px rgba(0,0,0,0.15)' },
+        'old':           { bg: '#f9f9f9', border: '#d1d1d1', text: '#222222', accent: '#0547ad', radius: '2px',  shadow: 'none' },
+        'old-orange':    { bg: '#f9f9f9', border: '#d1d1d1', text: '#222222', accent: '#f68b1f', radius: '2px',  shadow: 'none' },
+        'old-blue':      { bg: '#f9f9f9', border: '#d1d1d1', text: '#222222', accent: '#0070f3', radius: '2px',  shadow: 'none' }
     };
     const t = themes[hgTheme] || themes['modern-dark'];
 
@@ -49,21 +49,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const styleTag = document.createElement('style');
     styleTag.textContent = `
-        :host { display: block; width: 360px; height: 65px; margin: 10px 0; contain: content; }
+        :host { display: block; width: 360px; height: 65px; margin: 10px 0; }
         .hg-wrapper {
             display: flex; align-items: center; justify-content: space-between;
             width: 360px; height: 65px; padding: 0 15px; box-sizing: border-box;
             background: ${t.bg}; border: 1px solid ${t.border}; border-radius: ${t.radius};
-            box-shadow: ${t.shadow}; font-family: 'Inter', system-ui, sans-serif;
-            position: relative; overflow: hidden; color: ${t.text}; transition: all 0.3s ease;
+            box-shadow: ${t.shadow}; font-family: 'Inter', sans-serif;
+            position: relative; overflow: hidden; color: ${t.text};
         }
-        .hg-checkbox-area { width: 35px; display: flex; align-items: center; flex-shrink: 0; }
+        .hg-checkbox-area { width: 35px; display: flex; align-items: center; }
         #hg-verify-btn {
             width: 28px; height: 28px; background: ${hgTheme.includes('dark') ? '#0a0a0c' : '#ffffff'};
             border: 2px solid ${t.border}; border-radius: ${hgTheme.includes('modern') ? '6px' : '0px'};
             cursor: pointer; transition: 0.2s; background-size: 0; background-repeat: no-repeat;
         }
-        #hg-verify-btn:hover { border-color: ${t.accent}; transform: scale(1.05); }
         #hg-verify-btn.mining { 
             background-image: url('https://api.hashgate.net/cdn/static/loading.gif'); 
             background-size: cover; border-color: transparent; border-radius: 50%;
@@ -75,36 +74,27 @@ document.addEventListener("DOMContentLoaded", () => {
         .frozen #hg-verify-btn { background-image: url('https://api.hashgate.net/cdn/static/success.png'); }
         .hg-text-area { flex-grow: 1; display: flex; flex-direction: column; margin-left: 12px; overflow: hidden; }
         .hg-status { font-size: 14px; font-weight: 600; margin: 0; line-height: 1.2; white-space: nowrap; }
-        .hg-log { font-size: 11px; color: ${hgTheme.includes('dark') ? '#90909a' : '#666666'}; margin-top: 2px; white-space: nowrap; }
-        .hg-brand-area { display: flex; flex-direction: column; align-items: flex-end; width: 80px; flex-shrink: 0; opacity: 0.8; }
+        .hg-log { font-size: 11px; color: ${hgTheme.includes('dark') ? '#90909a' : '#666666'}; margin-top: 2px; }
+        .hg-brand-area { display: flex; flex-direction: column; align-items: flex-end; width: 80px; flex-shrink: 0; }
         .hg-logo { width: 22px; height: 22px; margin-bottom: 4px; object-fit: contain; }
-        .hg-links { display: flex; gap: 8px; font-size: 9px; }
-        .hg-links a { color: inherit; text-decoration: none; opacity: 0.7; }
-        .hg-links a:hover { opacity: 1; color: ${t.accent}; }
-        .hg-token-input { display: none; }
-        .poisoned { border-color: #ff4444 !important; }
-        .poisoned #hg-verify-btn { border-color: #ff4444; background-image: url('https://api.hashgate.net/cdn/static/error.png'); background-size: 70%; }
+        .hg-links { display: flex; gap: 8px; font-size: 9px; opacity: 0.7; }
+        .hg-links a { color: inherit; text-decoration: none; }
+        .poisoned { border: 1px solid #ff4444 !important; }
     `;
 
     const widget = document.createElement('div');
-    widget.id = 'hashgate-widget';
     widget.className = 'hg-wrapper';
     widget.innerHTML = `
-        <div class="hg-checkbox-area">
-            <button type="button" id="hg-verify-btn"></button>
-        </div>
+        <div class="hg-checkbox-area"><button type="button" id="hg-verify-btn"></button></div>
         <div class="hg-text-area">
             <div class="hg-status" id="hg-status">Security Check</div>
             <div class="hg-log" id="hg-log">Verify your identity</div>
         </div>
         <div class="hg-brand-area">
             <img src="https://api.hashgate.net/cdn/static/logo.webp" class="hg-logo" alt="HG">
-            <div class="hg-links">
-                <a href="#">Privacy</a>
-                <a href="#">Terms</a>
-            </div>
+            <div class="hg-links"><a href="#">Privacy</a><a href="#">Terms</a></div>
         </div>
-        <input type="hidden" id="hg-token" class="hg-token-input">
+        <input type="hidden" id="hg-token">
     `;
 
     shadow.appendChild(styleTag);
@@ -118,7 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const form = container.closest('form');
     const submitBtn = form ? form.querySelector('button[type="submit"], input[type="submit"]') : document.getElementById('submit-btn');
     if (submitBtn && hgMode === 'form') submitBtn.disabled = true;
-
+    
     // --- CONTROLLO PERSISTENZA ---
     const hgState = localStorage.getItem('hashgate_verified');
     if (hgState === 'true') {
