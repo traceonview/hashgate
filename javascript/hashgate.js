@@ -55,6 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const stili = `
         :root {
+            /* Colori Dinamici dal Tema */
             --hg-bg: ${t.bg};
             --hg-border: ${t.border};
             --hg-text: ${t.text};
@@ -62,44 +63,141 @@ document.addEventListener("DOMContentLoaded", () => {
             --hg-accent: ${t.accent};
             --hg-error: #ff4444;
             --hg-btn-bg: ${hgTheme.includes('dark') ? '#0a0a0c' : '#ffffff'};
-            --hg-radius: ${t.radius};
+            
+            /* Geometria Dinamica dal Tema */
+            --hg-radius-wgt: ${t.radius}; /* Angoli Widget */
+            --hg-radius-btn: ${hgTheme.includes('modern') ? '8px' : '2px'}; /* Angoli Pulsante */
             --hg-shadow: ${t.shadow};
         }
 
+        /* --- CONTENITORE PRINCIPALE (Il Widget) --- */
         #hashgate-widget { 
-            display: flex; align-items: center; width: 100%; max-width: 360px; 
-            background: var(--hg-bg); border: 1px solid var(--hg-border); 
-            border-radius: var(--hg-radius); padding: 12px 18px; box-sizing: border-box; 
-            font-family: 'Inter', system-ui, -apple-system, sans-serif; 
+            display: flex; 
+            align-items: center; /* Allinea tutto verticalmente al centro */
+            justify-content: space-between; /* Spazia le tre macro-aree */
+            
+            /* Dimensioni FISSE */
+            width: 360px; 
+            height: 64px; /* Altezza standard bloccata */
+            
+            /* Stile Dinamico */
+            background: var(--hg-bg); 
+            border: 1px solid var(--hg-border); 
+            border-radius: var(--hg-radius-wgt); 
             box-shadow: var(--hg-shadow); 
+            
+            /* Reset e Sicurezza */
+            padding: 0 15px; /* Padding laterale fisso, 0 verticale */
+            box-sizing: border-box; 
+            font-family: 'Inter', system-ui, -apple-system, sans-serif; 
+            position: relative; 
+            overflow: hidden;
             transition: all 0.3s ease;
-            position: relative; overflow: hidden;
         }
 
+        /* --- AREA 1: Checkbox (Sx) --- */
+        .hg-checkbox-area { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            width: 40px; /* Area fissa per il pulsante */
+            flex-shrink: 0; /* Impedisce che si schiacci */
+        }
+        
         #hg-verify-btn { 
-            width: 32px; height: 32px; background: var(--hg-btn-bg); 
-            border: 2px solid var(--hg-border); border-radius: ${hgTheme.includes('modern') ? '8px' : '2px'}; 
-            cursor: pointer; transition: all 0.2s; position: relative;
-            background-size: 60%; background-position: center; background-repeat: no-repeat;
+            /* Dimensioni FISSE bloccate */
+            width: 32px; 
+            height: 32px; 
+            
+            /* Stile */
+            background: var(--hg-btn-bg); 
+            border: 2px solid var(--hg-border); 
+            border-radius: var(--hg-radius-btn); /* Angoli dinamici */
+            cursor: pointer; 
+            transition: all 0.2s; 
+            position: relative;
+            
+            /* Reset Sfondo Immagine */
+            background-size: 0; /* Nasconde l'immagine di default */
+            background-position: center; 
+            background-repeat: no-repeat;
+            padding: 0; margin: 0; /* Reset browser defaults */
         }
-
         #hg-verify-btn:hover { border-color: var(--hg-accent); }
 
+        /* Stati Animati (success/loading/error) */
+        #hg-verify-btn.mining { 
+            border-color: transparent;
+            background-image: url('https://api.hashgate.net/cdn/static/loading.gif'); 
+            background-size: cover; 
+            background-color: transparent;
+        }
         #hashgate-widget.passed #hg-verify-btn { 
-            background-color: transparent; border-color: var(--hg-accent);
+            border-color: var(--hg-accent);
             background-image: url('https://api.hashgate.net/cdn/static/success.gif');
             background-size: 100%;
+            background-color: transparent;
         }
 
-        /* Testi e Brand */
-        .hg-text-area { flex-grow: 1; display: flex; flex-direction: column; margin-left: 10px; }
-        #hg-status { font-size: 0.9rem; font-weight: 600; color: var(--hg-text); }
-        #hg-log { font-size: 0.7rem; color: var(--hg-text-dim); margin-top: 1px; }
+        /* --- AREA 2: Testi (Centro) --- */
+        .hg-text-area { 
+            flex-grow: 1; /* Prende tutto lo spazio centrale */
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center;
+            margin-left: 12px; /* Distanza fissa dal pulsante */
+            margin-right: 10px; /* Distanza fissa dal logo */
+            overflow: hidden; /* Taglia testi troppo lunghi */
+        }
+        #hg-status { 
+            font-size: 14px; /* Dimensione fissa in pixel per sicurezza */
+            font-weight: 600; 
+            color: var(--hg-text); 
+            line-height: 1.2;
+            white-space: nowrap; /* Impedisce che il testo vada a capo */
+        }
+        #hg-log { 
+            font-size: 11px; /* Dimensione fissa */
+            color: var(--hg-text-dim); 
+            margin-top: 2px;
+            line-height: 1;
+            white-space: nowrap;
+        }
 
-        .hg-brand-area { display: flex; flex-direction: column; align-items: flex-end; opacity: 0.7; }
-        .hg-brand-logo { width: 18px; height: 18px; filter: ${hgTheme.includes('dark') ? 'none' : 'grayscale(1) contrast(1.2)'}; }
+        /* --- AREA 3: Brand & Links (Dx) --- */
+        .hg-brand-area { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: flex-end; /* Allinea a destra */
+            justify-content: center;
+            width: 70px; /* Area fissa per il brand */
+            flex-shrink: 0; 
+            opacity: 0.7; 
+        }
+        
+        /* 🔥 IL FIX DELL'IMMAGINE ENORME È QUI 🔥 */
+        .hg-brand-logo { 
+            width: 20px; /* Larghezza FISSA bloccata */
+            height: 20px; /* Altezza FISSA bloccata */
+            margin-bottom: 4px; 
+            display: block; /* Reset browser */
+            filter: ${hgTheme.includes('light') ? 'grayscale(1) contrast(1.2)' : 'none'};
+        }
+        
+        .hg-links { 
+            font-size: 9px; /* Dimensione fissa */
+            color: var(--hg-text-dim); 
+            display: flex; 
+            gap: 6px; /* Spazio fisso tra i link */
+            line-height: 1;
+        }
+        .hg-links a { 
+            color: inherit; 
+            text-decoration: none; 
+            transition: color 0.2s;
+        }
+        .hg-links a:hover { color: var(--hg-accent); }
     `;
-
     container.innerHTML = `
         <div id="hashgate-widget" class="hg-${hgTheme}">
             <div class="hg-checkbox-area">
