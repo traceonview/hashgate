@@ -54,6 +54,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const t = themes[hgTheme] || themes['modern-dark'];
 
     const stili = `
+        /* RESET TOTALE PER L'AREA HASHGATE */
+        #hashgate-widget, #hashgate-widget * {
+            box-sizing: border-box !important;
+            margin: 0; padding: 0;
+            border: none;
+            background: none;
+            text-transform: none;
+            letter-spacing: normal;
+        }
+
         :root {
             --hg-bg: ${t.bg};
             --hg-border: ${t.border};
@@ -66,101 +76,96 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         #hashgate-widget { 
-            display: flex !important; 
-            align-items: center !important; 
-            justify-content: space-between !important;
-            
-            width: 360px !important; 
-            height: 65px !important; 
-            
             background: var(--hg-bg) !important; 
             border: 1px solid var(--hg-border) !important; 
             border-radius: var(--hg-radius) !important; 
-            padding: 0 15px !important; 
-            box-sizing: border-box !important; 
-            font-family: 'Inter', system-ui, sans-serif !important; 
             box-shadow: var(--hg-shadow) !important; 
-            position: relative !important; 
-            overflow: hidden !important;
+            font-family: 'Inter', sans-serif !important;
         }
 
-        /* Area Checkbox */
-        .hg-checkbox-area { width: 35px !important; display: flex !important; align-items: center !important; }
-
         #hg-verify-btn { 
-            width: 28px !important; height: 28px !important; 
             background: var(--hg-btn-bg) !important; 
             border: 2px solid var(--hg-border) !important; 
             border-radius: ${hgTheme.includes('modern') ? '6px' : '0px'} !important; 
             cursor: pointer !important;
-            background-size: 0; background-position: center; background-repeat: no-repeat;
         }
 
-        /* Area Testi */
-        .hg-text-area { 
-            flex-grow: 1 !important; 
-            display: flex !important; 
-            flex-direction: column !important; 
-            margin-left: 10px !important;
-            justify-content: center !important;
-            overflow: hidden !important; /* Taglia se troppo lungo */
-        }
+        #hg-status { font-size: 14px !important; font-weight: 600 !important; color: var(--hg-text) !important; }
+        #hg-log { font-size: 11px !important; color: var(--hg-text-dim) !important; }
 
-        #hg-status { 
-            font-size: 14px !important; 
-            font-weight: 600 !important; 
-            color: var(--hg-text) !important; 
-            margin: 0 !important;
-            line-height: 1.2 !important;
-            white-space: nowrap !important; /* Impedisce a capo */
-        }
-
-        #hg-log { 
-            font-size: 11px !important; 
-            color: var(--hg-text-dim) !important; 
-            margin: 2px 0 0 0 !important;
-            line-height: 1.1 !important;
-            white-space: nowrap !important;
-        }
-
-        /* Area Brand & Links */
-        .hg-brand-area { 
-            display: flex !important; 
-            flex-direction: column !important; 
-            align-items: flex-end !important; 
-            width: 80px !important;
-            justify-content: center !important;
-            flex-shrink: 0 !important;
-        }
-
-        .hg-brand-logo { 
-            width: 22px !important; /* Dimensioni FISSE bloccate */
-            height: 22px !important; 
-            margin-bottom: 4px !important;
-            object-fit: contain !important; /* Evita stretching */
-            filter: ${hgTheme.includes('light') || hgTheme.includes('old') ? 'grayscale(1) brightness(0.5)' : 'none'};
-        }
-
-        .hg-links { display: flex !important; gap: 8px !important; }
         .hg-links a { font-size: 10px !important; color: var(--hg-text-dim) !important; text-decoration: none !important; }
-        .hg-links a:hover { color: var(--hg-accent) !important; }
+
+        /* Icone di stato */
+        #hg-verify-btn.mining { 
+            background-image: url('https://api.hashgate.net/cdn/static/loading.gif') !important; 
+            background-size: cover !important; 
+            border-color: transparent !important; 
+        }
+
+        #hashgate-widget.passed #hg-verify-btn { 
+            background-image: url('https://api.hashgate.net/cdn/static/success.gif') !important;
+            background-size: 100% !important; 
+            border-color: var(--hg-accent) !important;
+        }
     `;
+    document.head.insertAdjacentHTML('beforeend', `<style>${stili}</style>`);
+
     container.innerHTML = `
-        <div id="hashgate-widget" class="hg-theme-${hgTheme}">
-            <div class="hg-checkbox-area">
-                <button type="button" id="hg-verify-btn"></button>
+        <div id="hashgate-widget" class="hg-theme-${hgTheme}" style="
+            display: flex !important; 
+            align-items: center !important; 
+            justify-content: space-between !important;
+            width: 360px !important; 
+            height: 65px !important; 
+            min-height: 65px !important;
+            max-height: 65px !important;
+            padding: 0 15px !important; 
+            box-sizing: border-box !important;
+            position: relative !important;
+            overflow: hidden !important;
+            z-index: 9999 !important;
+        ">
+            <div class="hg-checkbox-area" style="width: 35px !important; display: flex !important; align-items: center !important;">
+                <button type="button" id="hg-verify-btn" style="
+                    width: 28px !important; 
+                    height: 28px !important; 
+                    flex-shrink: 0 !important;
+                    display: block !important;
+                "></button>
             </div>
             
-            <div class="hg-text-area">
-                <div id="hg-status">Security Check</div>
-                <div id="hg-log">Verify your identity</div>
+            <div class="hg-text-area" style="
+                flex-grow: 1 !important; 
+                display: flex !important; 
+                flex-direction: column !important; 
+                margin-left: 10px !important;
+                justify-content: center !important;
+            ">
+                <div id="hg-status" style="margin: 0 !important; padding: 0 !important; white-space: nowrap !important;">Security Check</div>
+                <div id="hg-log" style="margin: 0 !important; padding: 0 !important; white-space: nowrap !important;">Verify your identity</div>
             </div>
             
-            <div class="hg-brand-area">
-                <img src="https://api.hashgate.net/cdn/static/logo.webp" class="hg-brand-logo" alt="HG">
-                <div class="hg-links">
-                    <a href="https://hashgate.net/privacy" target="_blank">Privacy</a>
-                    <a href="https://hashgate.net/terms" target="_blank">Terms</a>
+            <div class="hg-brand-area" style="
+                display: flex !important; 
+                flex-direction: column !important; 
+                align-items: flex-end !important; 
+                width: 80px !important;
+                flex-shrink: 0 !important;
+            ">
+                <img src="https://api.hashgate.net/cdn/static/logo.webp" class="hg-brand-logo" alt="HG" style="
+                    width: 22px !important; 
+                    height: 22px !important; 
+                    max-width: 22px !important; 
+                    max-height: 22px !important;
+                    min-width: 22px !important;
+                    min-height: 22px !important;
+                    display: block !important;
+                    margin-bottom: 4px !important;
+                    object-fit: contain !important;
+                ">
+                <div class="hg-links" style="display: flex !important; gap: 8px !important;">
+                    <a href="#">Privacy</a>
+                    <a href="#">Terms</a>
                 </div>
             </div>
             
