@@ -246,7 +246,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify(payload)
             });
             
-            if (!response.ok) throw new Error("API Rifiutata o Key non valida");
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.log("LOG DI SISTEMA CHALLENGE:", errorData);
+                throw new Error("API Rifiutata o Key non valida");
+            }
             
             const data = await response.json();
             statusEl.innerText = "Calcolo in corso. . .";
