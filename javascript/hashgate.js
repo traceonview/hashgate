@@ -253,7 +253,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 setTimeout(() => { window.location.reload(); }, 1500); 
                 return; 
             }
-            }
+            
 
             if (entropyScore < MIN_ENTROPY) {
                 if (firstTapTime === 0) {
