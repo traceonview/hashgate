@@ -69,8 +69,10 @@ document.addEventListener("DOMContentLoaded", () => {
             display: flex !important; 
             align-items: center !important; 
             justify-content: space-between !important;
+            
             width: 360px !important; 
             height: 65px !important; 
+            
             background: var(--hg-bg) !important; 
             border: 1px solid var(--hg-border) !important; 
             border-radius: var(--hg-radius) !important; 
@@ -82,23 +84,16 @@ document.addEventListener("DOMContentLoaded", () => {
             overflow: hidden !important;
         }
 
-        /* Area Pulsante */
-        .hg-checkbox-area { 
-            width: 35px !important; 
-            display: flex !important; 
-            align-items: center !important; 
-        }
+        /* Area Checkbox */
+        .hg-checkbox-area { width: 35px !important; display: flex !important; align-items: center !important; }
 
         #hg-verify-btn { 
-            width: 28px !important; 
-            height: 28px !important; 
+            width: 28px !important; height: 28px !important; 
             background: var(--hg-btn-bg) !important; 
             border: 2px solid var(--hg-border) !important; 
             border-radius: ${hgTheme.includes('modern') ? '6px' : '0px'} !important; 
             cursor: pointer !important;
-            background-size: 0; 
-            background-position: center; 
-            background-repeat: no-repeat;
+            background-size: 0; background-position: center; background-repeat: no-repeat;
         }
 
         /* Area Testi */
@@ -108,6 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
             flex-direction: column !important; 
             margin-left: 10px !important;
             justify-content: center !important;
+            overflow: hidden !important; /* Taglia se troppo lungo */
         }
 
         #hg-status { 
@@ -116,6 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
             color: var(--hg-text) !important; 
             margin: 0 !important;
             line-height: 1.2 !important;
+            white-space: nowrap !important; /* Impedisce a capo */
         }
 
         #hg-log { 
@@ -123,51 +120,30 @@ document.addEventListener("DOMContentLoaded", () => {
             color: var(--hg-text-dim) !important; 
             margin: 2px 0 0 0 !important;
             line-height: 1.1 !important;
+            white-space: nowrap !important;
         }
 
-        /* Area Logo e Link */
+        /* Area Brand & Links */
         .hg-brand-area { 
             display: flex !important; 
             flex-direction: column !important; 
             align-items: flex-end !important; 
             width: 80px !important;
             justify-content: center !important;
+            flex-shrink: 0 !important;
         }
 
         .hg-brand-logo { 
-            width: 22px !important; 
+            width: 22px !important; /* Dimensioni FISSE bloccate */
             height: 22px !important; 
             margin-bottom: 4px !important;
-            object-fit: contain !important;
+            object-fit: contain !important; /* Evita stretching */
             filter: ${hgTheme.includes('light') || hgTheme.includes('old') ? 'grayscale(1) brightness(0.5)' : 'none'};
         }
 
-        .hg-links { 
-            display: flex !important; 
-            gap: 8px !important; 
-        }
-
-        .hg-links a { 
-            font-size: 10px !important; 
-            color: var(--hg-text-dim) !important; 
-            text-decoration: none !important;
-        }
-        
+        .hg-links { display: flex !important; gap: 8px !important; }
+        .hg-links a { font-size: 10px !important; color: var(--hg-text-dim) !important; text-decoration: none !important; }
         .hg-links a:hover { color: var(--hg-accent) !important; }
-
-        /* Icone di stato */
-        #hg-verify-btn.mining { 
-            background-image: url('https://api.hashgate.net/cdn/static/loading.gif') !important; 
-            background-size: 100% !important; 
-            border-color: transparent !important; 
-        }
-
-        #hashgate-widget.passed #hg-verify-btn { 
-            background-image: url('https://api.hashgate.net/cdn/static/success.gif') !important;
-            background-size: 100% !important; 
-            border-color: var(--hg-accent) !important;
-            background-color: transparent !important;
-        }
     `;
     container.innerHTML = `
         <div id="hashgate-widget" class="hg-theme-${hgTheme}">
