@@ -39,9 +39,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // 1. Creiamo la "Bolla di Isolamento" (Shadow DOM)
+    // 1. Inizializziamo lo Shadow DOM (La bolla di isolamento)
     const shadow = container.attachShadow({mode: 'open'});
 
-    // 2. Definiamo i colori del tema
+    // 2. Mappa dei Temi (Modern vs Old)
     const themes = {
         'modern-dark':   { bg: '#141417', border: '#2a2a30', text: '#ffffff', accent: '#00ff88', radius: '12px' },
         'modern-orange': { bg: '#141417', border: '#2a2a30', text: '#ffffff', accent: '#ff8800', radius: '12px' },
@@ -52,11 +53,10 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     const t = themes[hgTheme] || themes['modern-dark'];
 
-    // 3. CSS INTERNO ALLA BOLLA (Inattaccabile dall'esterno)
+    // 3. Stili Interni (Blindati)
     const styleTag = document.createElement('style');
     styleTag.textContent = `
-        :host { display: block; width: 360px; height: 65px; contain: content; }
-        
+        :host { display: block; width: 360px; height: 65px; margin: 10px 0; }
         .hg-wrapper {
             display: flex; align-items: center; justify-content: space-between;
             width: 360px; height: 65px; padding: 0 15px; box-sizing: border-box;
@@ -64,34 +64,27 @@ document.addEventListener("DOMContentLoaded", () => {
             box-shadow: 0 8px 24px rgba(0,0,0,0.15); font-family: sans-serif;
             position: relative; overflow: hidden; color: ${t.text};
         }
-
         .hg-checkbox-area { width: 35px; display: flex; align-items: center; }
-        
         #hg-verify-btn {
             width: 28px; height: 28px; background: ${hgTheme.includes('dark') ? '#0a0a0c' : '#ffffff'};
             border: 2px solid ${t.border}; border-radius: ${hgTheme.includes('modern') ? '6px' : '0px'};
-            cursor: pointer; transition: 0.2s; position: relative;
+            cursor: pointer; transition: 0.2s; background-size: 0; background-repeat: no-repeat;
         }
-
-        #hg-verify-btn.mining { 
-            background-image: url('https://api.hashgate.net/cdn/static/loading.gif'); 
-            background-size: cover; border-color: transparent; 
-        }
-
+        #hg-verify-btn.mining { background-image: url('https://api.hashgate.net/cdn/static/loading.gif'); background-size: cover; border-color: transparent; }
+        .passed #hg-verify-btn { background-image: url('https://api.hashgate.net/cdn/static/success.gif'); background-size: 100%; border-color: ${t.accent}; }
         .hg-text-area { flex-grow: 1; display: flex; flex-direction: column; margin-left: 12px; }
         .hg-status { font-size: 14px; font-weight: 600; margin: 0; line-height: 1.2; }
         .hg-log { font-size: 11px; color: ${hgTheme.includes('dark') ? '#90909a' : '#666666'}; margin-top: 2px; }
-
         .hg-brand-area { display: flex; flex-direction: column; align-items: flex-end; width: 80px; }
         .hg-logo { width: 22px; height: 22px; margin-bottom: 4px; object-fit: contain; }
         .hg-links { display: flex; gap: 8px; font-size: 9px; opacity: 0.7; }
         .hg-links a { color: inherit; text-decoration: none; }
     `;
 
-    // 4. HTML INTERNO ALLA BOLLA
-    const widgetHTML = document.createElement('div');
-    widgetHTML.className = 'hg-wrapper';
-    widgetHTML.innerHTML = `
+    // 4. HTML Interno
+    const widget = document.createElement('div');
+    widget.className = 'hg-wrapper';
+    widget.innerHTML = `
         <div class="hg-checkbox-area">
             <button type="button" id="hg-verify-btn"></button>
         </div>
@@ -109,16 +102,23 @@ document.addEventListener("DOMContentLoaded", () => {
         <input type="hidden" id="hg-token">
     `;
 
+    // 5. Iniezione nella Shadow Root
+    shadow.appendChild(styleTag);
+    shadow.appendChild(widget);
+
+    // 6. Definiamo i riferimenti per il resto dello script
+    // NOTA: Usiamo "shadow.querySelector" perché gli elementi sono dentro la bolla!
+    const btn = shadow.querySelector('#hg-verify-btn');
+    const statusEl = shadow.querySelector('#hg-status');
+    const logEl = shadow.querySelector('#hg-log');
+    const tokenInput = shadow.querySelector('#hg-token');
+
     // 5. Montaggio
     shadow.appendChild(styleTag);
     shadow.appendChild(widgetHTML);
 
     // 6. Ricolleghiamo i riferimenti (Fondamentale!)
-    const widget = widgetHTML; 
-    const btn = shadow.querySelector('#hg-verify-btn');
-    const statusEl = shadow.querySelector('#hg-status');
-    const logEl = shadow.querySelector('#hg-log');
-    const tokenInput = shadow.querySelector('#hg-token');
+    
     document.head.insertAdjacentHTML('beforeend', `<style>${stili}</style>`);
 
    
