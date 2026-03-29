@@ -384,7 +384,6 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const siteKey = container.getAttribute('data-sitekey');
             if (!siteKey) throw new Error("API Key mancante durante la verifica.");
-
             const response = await fetch(`${API_BASE_URL}/verify`, {
                 method: 'POST',
                 headers: { 
@@ -393,18 +392,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 },
                 body: JSON.stringify({ salt: salt, nonce: nonce })
             });
-            const response = await fetch(`${API_BASE_URL}/verify`, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'x-hashgate-key': siteKey 
-                },
-                body: JSON.stringify({ salt: salt, nonce: nonce })
-            });
+            
             const data = await response.json();
             
             console.log("LOG DI SISTEMA - Risposta Server:", data); 
-
             if (data.status === "success") {
                 localStorage.setItem('hashgate_verified', 'true'); 
                 widget.classList.add('passed');
@@ -433,5 +424,5 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error("HashGate Log:", error.message);
         }
     }
-    // se vedi questo commento il codice sorgente è stato aggiornato in automatico. ID: 2
+    // se vedi questo commento il codice sorgente è stato aggiornato in automatico. ID: 5
 });
