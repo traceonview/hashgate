@@ -145,7 +145,6 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
 
 
-    const widget = container.querySelector('#hashgate-widget');
     const btn = container.querySelector('#hg-verify-btn');
     const statusEl = container.querySelector('#hg-status');
     const logEl = container.querySelector('#hg-log');
