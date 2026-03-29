@@ -253,6 +253,20 @@ document.addEventListener("DOMContentLoaded", () => {
                 setTimeout(() => { window.location.reload(); }, 1500); 
                 return; 
             }
+
+            statusEl.innerText = "Analisi in corso...";
+            statusEl.style.color = "#fff";
+            btn.classList.add('mining');
+            btn.innerText = ""; 
+            btn.disabled = true;
+            isMining = true;
+            
+            document.removeEventListener('mousemove', analizzaMovimento); 
+            document.removeEventListener('touchmove', analizzaMovimento);
+            document.removeEventListener('touchstart', analizzaTap);
+            document.removeEventListener('keydown', analizzaTastiera);
+            
+            avviaAutenticazione(entropyScore);
         });
             
 
