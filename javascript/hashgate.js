@@ -42,27 +42,27 @@ document.addEventListener("DOMContentLoaded", () => {
     const themes = {
         'modern-dark': { 
             bg: '#141417', border: '#2a2a30', text: '#ffffff', accent: '#00ff88', radius: '12px', shadow: '0 8px 24px rgba(0,0,0,0.2)',
-            gifLoad: 'loading-green.gif', gifPass: 'success-green.gif', imgFail: 'error-red.png' 
+            gifLoad: 'loading.gif', gifPass: 'success-green.gif', imgFail: 'error-red.png' 
         },
         'modern-orange': { 
             bg: '#1a1614', border: '#33241c', text: '#ffffff', accent: '#ff8800', radius: '12px', shadow: '0 8px 24px rgba(255,136,0,0.08)',
-            gifLoad: 'loading-orange.gif', gifPass: 'success-orange.gif', imgFail: 'error-red.png' 
+            gifLoad: 'loading.gif', gifPass: 'success-orange.gif', imgFail: 'error-red.png' 
         },
         'modern-blue': { 
             bg: '#12161a', border: '#1c2633', text: '#ffffff', accent: '#0088ff', radius: '12px', shadow: '0 8px 24px rgba(0,136,255,0.08)',
-            gifLoad: 'loading-blue.gif', gifPass: 'success-blue.gif', imgFail: 'error-red.png' 
+            gifLoad: 'loading.gif', gifPass: 'success-blue.gif', imgFail: 'error-red.png' 
         },
         'old': { 
             bg: '#fcfcfc', border: '#d4d4d4', text: '#222222', accent: '#0547ad', radius: '2px', shadow: 'inset 0 1px 3px rgba(0,0,0,0.04)',
-            gifLoad: 'loading-old.gif', gifPass: 'success-old.gif', imgFail: 'error-old.png' 
+            gifLoad: 'loading.gif', gifPass: 'success-old.gif', imgFail: 'error-old.png' 
         },
         'old-orange': { 
             bg: '#fffbf7', border: '#e6d3c3', text: '#2d2218', accent: '#f68b1f', radius: '2px', shadow: 'inset 0 1px 3px rgba(0,0,0,0.04)',
-            gifLoad: 'loading-old-orange.gif', gifPass: 'success-old-orange.gif', imgFail: 'error-old.png' 
+            gifLoad: 'loading.gif', gifPass: 'success-old-orange.gif', imgFail: 'error-old.png' 
         },
         'old-blue': { 
             bg: '#f7fbff', border: '#c3d8e6', text: '#18242d', accent: '#0070f3', radius: '2px', shadow: 'inset 0 1px 3px rgba(0,0,0,0.04)',
-            gifLoad: 'loading-old-blue.gif', gifPass: 'success-old-blue.gif', imgFail: 'error-old.png' 
+            gifLoad: 'loading.gif', gifPass: 'success-old-blue.gif', imgFail: 'error-old.png' 
         }
     };
     
