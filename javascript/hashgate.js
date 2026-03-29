@@ -212,12 +212,63 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- logica e sensori con supporto mobile ---
     // --- logica e sensori con supporto mobile avanzato ---
+    // --- logica e sensori con supporto mobile avanzato ---
     function inizializzaSensori() {
         let entropyScore = 0;
         let lastX = 0, lastY = 0;
         let isMining = false;
         const sessionStartTime = Date.now();
-        let firstTapTime = 0;
+
+        function analizzaMovimento(e) {
+            if (isMining) return;
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            const distance = Math.sqrt(Math.pow(clientX - lastX, 2) + Math.pow(clientY - lastY, 2));
+            if (distance > 0 && distance < 150) { entropyScore += 1; }
+            lastX = clientX;
+            lastY = clientY;
+        }
+
+        function analizzaTap(e) { if (!isMining && e.isTrusted) entropyScore += 2; }
+        function analizzaTastiera(e) { if (!isMining && e.isTrusted) entropyScore += 1; }
+        function analizzaGiroscopio(e) {
+            if (!isMining && e.beta && e.gamma && (Math.abs(e.beta) > 1 || Math.abs(e.gamma) > 1)) {
+                entropyScore += 2;
+                window.removeEventListener('deviceorientation', analizzaGiroscopio);
+            }
+        }
+        
+        document.addEventListener('mousemove', analizzaMovimento);
+        document.addEventListener('touchmove', analizzaMovimento);
+        document.addEventListener('touchstart', analizzaTap); 
+        document.addEventListener('keydown', analizzaTastiera); 
+        if (window.DeviceOrientationEvent) window.addEventListener('deviceorientation', analizzaGiroscopio);
+
+        btn.addEventListener('click', async (e) => {
+            const timeToClick = Date.now() - sessionStartTime;
+
+            if (!e.isTrusted || timeToClick < 300) {
+                localStorage.setItem('hashgate_verified', 'false');
+                inviaTelemetria('blocked', 'fast_click_or_untrusted'); 
+                setTimeout(() => { window.location.reload(); }, 1500); 
+                return; 
+            }
+
+            statusEl.innerText = "Analisi in corso...";
+            statusEl.style.color = "#fff";
+            btn.classList.add('mining');
+            btn.innerText = ""; 
+            btn.disabled = true;
+            isMining = true;
+            
+            document.removeEventListener('mousemove', analizzaMovimento); 
+            document.removeEventListener('touchmove', analizzaMovimento);
+            document.removeEventListener('touchstart', analizzaTap);
+            document.removeEventListener('keydown', analizzaTastiera);
+            
+            avviaAutenticazione(entropyScore);
+        });
+    }
 
         function analizzaMovimento(e) {
             if (isMining) return;
