@@ -125,7 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
         inizializzaSensori();
     }
-    } else if (hgState === 'false') {
+     else if (hgState === 'false') {
         widget.classList.add('poisoned');
         btn.innerText = "pois";
         btn.disabled = true;
