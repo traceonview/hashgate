@@ -82,7 +82,6 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
 
     // 4. HTML Interno
-    const widget = document.createElement('div');
     widget.className = 'hg-wrapper';
     widget.innerHTML = `
         <div class="hg-checkbox-area">
