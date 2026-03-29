@@ -111,33 +111,36 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // --- CONTROLLO PERSISTENZA ---
     const hgState = localStorage.getItem('hashgate_verified');
+
     if (hgState === 'true') {
         widget.classList.add('passed', 'frozen');
         statusEl.innerText = "Verifica completata";
         logEl.innerText = "Sicurezza fornita da HashGate.net";
         tokenInput.value = "token_locale_valido"; 
-        if (hgMode === 'form' && submitBtn) submitBtn.disabled = false;
-        else if (hgMode === 'redirect') setTimeout(() => { window.location.href = hgRedirectUrl; }, 1000);
+
+        if (hgMode === 'form' && submitBtn) {
+            submitBtn.disabled = false;
+        } else if (hgMode === 'redirect') {
+            setTimeout(() => { window.location.href = hgRedirectUrl; }, 1000);
+        }
+
     } else if (hgState === 'false') {
-        widget.classList.add('poisoned');
-        statusEl.innerText = "Accesso Negato";
-        statusEl.style.color = "red";
-    } else {
-        inizializzaSensori();
-    }
-     else if (hgState === 'false') {
         widget.classList.add('poisoned');
         btn.innerText = "pois";
         btn.disabled = true;
         statusEl.innerText = "Accesso Negato";
         statusEl.style.color = "red";
-        function poisoningCore() {
+
+        const poisoningCore = () => {
             const garbage = [];
-            for (let i = 0; i < 5000; i++) garbage.push(btoa(Math.random().toString(36).substring(2)));
+            for (let i = 0; i < 5000; i++) {
+                garbage.push(btoa(Math.random().toString(36).substring(2)));
+            }
             logEl.innerText = garbage.join(' :: ');
             requestAnimationFrame(poisoningCore); 
-        }
+        };
         setTimeout(poisoningCore, 500);
+
     } else {
         inizializzaSensori();
     }
