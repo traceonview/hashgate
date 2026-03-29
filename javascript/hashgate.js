@@ -55,165 +55,139 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const stili = `
         :root {
-            /* Colori Dinamici dal Tema */
             --hg-bg: ${t.bg};
             --hg-border: ${t.border};
             --hg-text: ${t.text};
             --hg-text-dim: ${hgTheme.includes('dark') ? '#90909a' : '#666666'};
             --hg-accent: ${t.accent};
-            --hg-error: #ff4444;
-            --hg-btn-bg: ${hgTheme.includes('dark') ? '#0a0a0c' : '#ffffff'};
-            
-            /* Geometria Dinamica dal Tema */
-            --hg-radius-wgt: ${t.radius}; /* Angoli Widget */
-            --hg-radius-btn: ${hgTheme.includes('modern') ? '8px' : '2px'}; /* Angoli Pulsante */
+            --hg-radius: ${t.radius};
             --hg-shadow: ${t.shadow};
+            --hg-btn-bg: ${hgTheme.includes('dark') ? '#0a0a0c' : '#ffffff'};
         }
 
-        /* --- CONTENITORE PRINCIPALE (Il Widget) --- */
         #hashgate-widget { 
-            display: flex; 
-            align-items: center; /* Allinea tutto verticalmente al centro */
-            justify-content: space-between; /* Spazia le tre macro-aree */
-            
-            /* Dimensioni FISSE */
-            width: 360px; 
-            height: 64px; /* Altezza standard bloccata */
-            
-            /* Stile Dinamico */
-            background: var(--hg-bg); 
-            border: 1px solid var(--hg-border); 
-            border-radius: var(--hg-radius-wgt); 
-            box-shadow: var(--hg-shadow); 
-            
-            /* Reset e Sicurezza */
-            padding: 0 15px; /* Padding laterale fisso, 0 verticale */
-            box-sizing: border-box; 
-            font-family: 'Inter', system-ui, -apple-system, sans-serif; 
-            position: relative; 
-            overflow: hidden;
-            transition: all 0.3s ease;
+            display: flex !important; 
+            align-items: center !important; 
+            justify-content: space-between !important;
+            width: 360px !important; 
+            height: 65px !important; 
+            background: var(--hg-bg) !important; 
+            border: 1px solid var(--hg-border) !important; 
+            border-radius: var(--hg-radius) !important; 
+            padding: 0 15px !important; 
+            box-sizing: border-box !important; 
+            font-family: 'Inter', system-ui, sans-serif !important; 
+            box-shadow: var(--hg-shadow) !important; 
+            position: relative !important; 
+            overflow: hidden !important;
         }
 
-        /* --- AREA 1: Checkbox (Sx) --- */
+        /* Area Pulsante */
         .hg-checkbox-area { 
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            width: 40px; /* Area fissa per il pulsante */
-            flex-shrink: 0; /* Impedisce che si schiacci */
+            width: 35px !important; 
+            display: flex !important; 
+            align-items: center !important; 
         }
-        
+
         #hg-verify-btn { 
-            /* Dimensioni FISSE bloccate */
-            width: 32px; 
-            height: 32px; 
-            
-            /* Stile */
-            background: var(--hg-btn-bg); 
-            border: 2px solid var(--hg-border); 
-            border-radius: var(--hg-radius-btn); /* Angoli dinamici */
-            cursor: pointer; 
-            transition: all 0.2s; 
-            position: relative;
-            
-            /* Reset Sfondo Immagine */
-            background-size: 0; /* Nasconde l'immagine di default */
+            width: 28px !important; 
+            height: 28px !important; 
+            background: var(--hg-btn-bg) !important; 
+            border: 2px solid var(--hg-border) !important; 
+            border-radius: ${hgTheme.includes('modern') ? '6px' : '0px'} !important; 
+            cursor: pointer !important;
+            background-size: 0; 
             background-position: center; 
             background-repeat: no-repeat;
-            padding: 0; margin: 0; /* Reset browser defaults */
-        }
-        #hg-verify-btn:hover { border-color: var(--hg-accent); }
-
-        /* Stati Animati (success/loading/error) */
-        #hg-verify-btn.mining { 
-            border-color: transparent;
-            background-image: url('https://api.hashgate.net/cdn/static/loading.gif'); 
-            background-size: cover; 
-            background-color: transparent;
-        }
-        #hashgate-widget.passed #hg-verify-btn { 
-            border-color: var(--hg-accent);
-            background-image: url('https://api.hashgate.net/cdn/static/success.gif');
-            background-size: 100%;
-            background-color: transparent;
         }
 
-        /* --- AREA 2: Testi (Centro) --- */
+        /* Area Testi */
         .hg-text-area { 
-            flex-grow: 1; /* Prende tutto lo spazio centrale */
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center;
-            margin-left: 12px; /* Distanza fissa dal pulsante */
-            margin-right: 10px; /* Distanza fissa dal logo */
-            overflow: hidden; /* Taglia testi troppo lunghi */
-        }
-        #hg-status { 
-            font-size: 14px; /* Dimensione fissa in pixel per sicurezza */
-            font-weight: 600; 
-            color: var(--hg-text); 
-            line-height: 1.2;
-            white-space: nowrap; /* Impedisce che il testo vada a capo */
-        }
-        #hg-log { 
-            font-size: 11px; /* Dimensione fissa */
-            color: var(--hg-text-dim); 
-            margin-top: 2px;
-            line-height: 1;
-            white-space: nowrap;
+            flex-grow: 1 !important; 
+            display: flex !important; 
+            flex-direction: column !important; 
+            margin-left: 10px !important;
+            justify-content: center !important;
         }
 
-        /* --- AREA 3: Brand & Links (Dx) --- */
+        #hg-status { 
+            font-size: 14px !important; 
+            font-weight: 600 !important; 
+            color: var(--hg-text) !important; 
+            margin: 0 !important;
+            line-height: 1.2 !important;
+        }
+
+        #hg-log { 
+            font-size: 11px !important; 
+            color: var(--hg-text-dim) !important; 
+            margin: 2px 0 0 0 !important;
+            line-height: 1.1 !important;
+        }
+
+        /* Area Logo e Link */
         .hg-brand-area { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: flex-end; /* Allinea a destra */
-            justify-content: center;
-            width: 70px; /* Area fissa per il brand */
-            flex-shrink: 0; 
-            opacity: 0.7; 
+            display: flex !important; 
+            flex-direction: column !important; 
+            align-items: flex-end !important; 
+            width: 80px !important;
+            justify-content: center !important;
         }
-        
-        /* 🔥 IL FIX DELL'IMMAGINE ENORME È QUI 🔥 */
+
         .hg-brand-logo { 
-            width: 20px; /* Larghezza FISSA bloccata */
-            height: 20px; /* Altezza FISSA bloccata */
-            margin-bottom: 4px; 
-            display: block; /* Reset browser */
-            filter: ${hgTheme.includes('light') ? 'grayscale(1) contrast(1.2)' : 'none'};
+            width: 22px !important; 
+            height: 22px !important; 
+            margin-bottom: 4px !important;
+            object-fit: contain !important;
+            filter: ${hgTheme.includes('light') || hgTheme.includes('old') ? 'grayscale(1) brightness(0.5)' : 'none'};
+        }
+
+        .hg-links { 
+            display: flex !important; 
+            gap: 8px !important; 
+        }
+
+        .hg-links a { 
+            font-size: 10px !important; 
+            color: var(--hg-text-dim) !important; 
+            text-decoration: none !important;
         }
         
-        .hg-links { 
-            font-size: 9px; /* Dimensione fissa */
-            color: var(--hg-text-dim); 
-            display: flex; 
-            gap: 6px; /* Spazio fisso tra i link */
-            line-height: 1;
+        .hg-links a:hover { color: var(--hg-accent) !important; }
+
+        /* Icone di stato */
+        #hg-verify-btn.mining { 
+            background-image: url('https://api.hashgate.net/cdn/static/loading.gif') !important; 
+            background-size: 100% !important; 
+            border-color: transparent !important; 
         }
-        .hg-links a { 
-            color: inherit; 
-            text-decoration: none; 
-            transition: color 0.2s;
+
+        #hashgate-widget.passed #hg-verify-btn { 
+            background-image: url('https://api.hashgate.net/cdn/static/success.gif') !important;
+            background-size: 100% !important; 
+            border-color: var(--hg-accent) !important;
+            background-color: transparent !important;
         }
-        .hg-links a:hover { color: var(--hg-accent); }
     `;
     container.innerHTML = `
-        <div id="hashgate-widget" class="hg-${hgTheme}">
+        <div id="hashgate-widget" class="hg-theme-${hgTheme}">
             <div class="hg-checkbox-area">
                 <button type="button" id="hg-verify-btn"></button>
             </div>
+            
             <div class="hg-text-area">
                 <div id="hg-status">Security Check</div>
                 <div id="hg-log">Verify your identity</div>
             </div>
+            
             <div class="hg-brand-area">
                 <img src="https://api.hashgate.net/cdn/static/logo.webp" class="hg-brand-logo" alt="HG">
-                <div class="hg-links" style="font-size: 0.6rem; color: var(--hg-text-dim); display: flex; gap: 8px;">
-                    <a href="#" style="color: inherit; text-decoration: none;">Privacy</a>
-                    <a href="#" style="color: inherit; text-decoration: none;">Terms</a>
+                <div class="hg-links">
+                    <a href="https://hashgate.net/privacy" target="_blank">Privacy</a>
+                    <a href="https://hashgate.net/terms" target="_blank">Terms</a>
                 </div>
             </div>
+            
             <input type="hidden" id="hg-token" name="hg-token">
         </div>
     `;
