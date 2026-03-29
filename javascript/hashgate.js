@@ -35,51 +35,90 @@ document.addEventListener("DOMContentLoaded", () => {
     const hgRedirectUrl = container.getAttribute('data-url') || '/';
     const hgTheme = container.getAttribute('data-theme') || 'modern-dark';
 
+    // 1. Motore dei Temi e Asset Mapping
     const themes = {
-        'modern-dark':   { bg: '#141417', border: '#2a2a30', text: '#ffffff', accent: '#00ff88', radius: '12px', shadow: '0 8px 24px rgba(0,0,0,0.15)' },
-        'modern-orange': { bg: '#141417', border: '#2a2a30', text: '#ffffff', accent: '#ff8800', radius: '12px', shadow: '0 8px 24px rgba(0,0,0,0.15)' },
-        'modern-blue':   { bg: '#141417', border: '#2a2a30', text: '#ffffff', accent: '#0088ff', radius: '12px', shadow: '0 8px 24px rgba(0,0,0,0.15)' },
-        'old':           { bg: '#f9f9f9', border: '#d1d1d1', text: '#222222', accent: '#0547ad', radius: '2px',  shadow: 'none' },
-        'old-orange':    { bg: '#f9f9f9', border: '#d1d1d1', text: '#222222', accent: '#f68b1f', radius: '2px',  shadow: 'none' },
-        'old-blue':      { bg: '#f9f9f9', border: '#d1d1d1', text: '#222222', accent: '#0070f3', radius: '2px',  shadow: 'none' }
+        // --- MODERN THEMES (Sfondi sfumati, ombre colorate) ---
+        'modern-dark': { 
+            bg: '#141417', border: '#2a2a30', text: '#ffffff', accent: '#00ff88', radius: '12px', shadow: '0 8px 24px rgba(0,0,0,0.2)',
+            gifLoad: 'loading-green.gif', gifPass: 'success-green.gif', imgFail: 'error-red.png' 
+        },
+        'modern-orange': { 
+            bg: '#1a1614', border: '#33241c', text: '#ffffff', accent: '#ff8800', radius: '12px', shadow: '0 8px 24px rgba(255,136,0,0.08)',
+            gifLoad: 'loading-orange.gif', gifPass: 'success-orange.gif', imgFail: 'error-red.png' 
+        },
+        'modern-blue': { 
+            bg: '#12161a', border: '#1c2633', text: '#ffffff', accent: '#0088ff', radius: '12px', shadow: '0 8px 24px rgba(0,136,255,0.08)',
+            gifLoad: 'loading-blue.gif', gifPass: 'success-blue.gif', imgFail: 'error-red.png' 
+        },
+        
+        // --- OLD THEMES (Stile Cloudflare, grigi tattici, ombre interne) ---
+        'old': { 
+            bg: '#fcfcfc', border: '#d4d4d4', text: '#222222', accent: '#0547ad', radius: '2px', shadow: 'inset 0 1px 3px rgba(0,0,0,0.04)',
+            gifLoad: 'loading-old.gif', gifPass: 'success-old.gif', imgFail: 'error-old.png' 
+        },
+        'old-orange': { 
+            bg: '#fffbf7', border: '#e6d3c3', text: '#2d2218', accent: '#f68b1f', radius: '2px', shadow: 'inset 0 1px 3px rgba(0,0,0,0.04)',
+            gifLoad: 'loading-old-orange.gif', gifPass: 'success-old-orange.gif', imgFail: 'error-old.png' 
+        },
+        'old-blue': { 
+            bg: '#f7fbff', border: '#c3d8e6', text: '#18242d', accent: '#0070f3', radius: '2px', shadow: 'inset 0 1px 3px rgba(0,0,0,0.04)',
+            gifLoad: 'loading-old-blue.gif', gifPass: 'success-old-blue.gif', imgFail: 'error-old.png' 
+        }
     };
     const t = themes[hgTheme] || themes['modern-dark'];
+    const cdn = 'https://api.hashgate.net/cdn/static/'; // Base URL per gli asset
 
-    const shadow = container.attachShadow({mode: 'open'});
-
+    // 2. CSS Interno con Iniezione Dinamica
     const styleTag = document.createElement('style');
     styleTag.textContent = `
-        :host { display: block; width: 360px; height: 65px; margin: 10px 0; }
+        :host { display: block; width: 360px; height: 65px; margin: 10px 0; font-family: 'Inter', system-ui, sans-serif; }
         .hg-wrapper {
             display: flex; align-items: center; justify-content: space-between;
             width: 360px; height: 65px; padding: 0 15px; box-sizing: border-box;
             background: ${t.bg}; border: 1px solid ${t.border}; border-radius: ${t.radius};
-            box-shadow: ${t.shadow}; font-family: 'Inter', sans-serif;
-            position: relative; overflow: hidden; color: ${t.text};
+            box-shadow: ${t.shadow}; position: relative; overflow: hidden; color: ${t.text};
+            transition: all 0.3s ease;
         }
         .hg-checkbox-area { width: 35px; display: flex; align-items: center; }
+        
         #hg-verify-btn {
-            width: 28px; height: 28px; background: ${hgTheme.includes('dark') ? '#0a0a0c' : '#ffffff'};
+            width: 28px; height: 28px; background: ${hgTheme.includes('dark') || hgTheme.includes('modern') ? '#0a0a0c' : '#ffffff'};
             border: 2px solid ${t.border}; border-radius: ${hgTheme.includes('modern') ? '6px' : '0px'};
-            cursor: pointer; transition: 0.2s; background-size: 0; background-repeat: no-repeat;
+            cursor: pointer; transition: 0.2s; background-size: 0; background-position: center; background-repeat: no-repeat;
         }
+        #hg-verify-btn:hover { border-color: ${t.accent}; }
+        
+        /* --- ASSET DINAMICI DAL CDN --- */
         #hg-verify-btn.mining { 
-            background-image: url('https://api.hashgate.net/cdn/static/loading.gif'); 
-            background-size: cover; border-color: transparent; border-radius: 50%;
+            background-image: url('${cdn}${t.gifLoad}'); 
+            background-size: cover; border-color: transparent; border-radius: 50%; 
         }
         .passed #hg-verify-btn { 
-            background-image: url('https://api.hashgate.net/cdn/static/success.gif'); 
-            background-size: 100%; border-color: ${t.accent}; background-color: transparent;
+            background-image: url('${cdn}${t.gifPass}'); 
+            background-size: 100%; border-color: ${t.accent}; background-color: transparent; 
         }
-        .frozen #hg-verify-btn { background-image: url('https://api.hashgate.net/cdn/static/success.png'); }
+        .frozen #hg-verify-btn { 
+            background-image: url('${cdn}${t.gifPass.replace('.gif', '.png')}'); 
+        }
+        
         .hg-text-area { flex-grow: 1; display: flex; flex-direction: column; margin-left: 12px; overflow: hidden; }
         .hg-status { font-size: 14px; font-weight: 600; margin: 0; line-height: 1.2; white-space: nowrap; }
-        .hg-log { font-size: 11px; color: ${hgTheme.includes('dark') ? '#90909a' : '#666666'}; margin-top: 2px; }
+        .hg-log { font-size: 11px; color: ${hgTheme.includes('old') ? '#666666' : '#90909a'}; margin-top: 2px; white-space: nowrap; }
         .hg-brand-area { display: flex; flex-direction: column; align-items: flex-end; width: 80px; flex-shrink: 0; }
-        .hg-logo { width: 22px; height: 22px; margin-bottom: 4px; object-fit: contain; }
+        
+        /* Filtro dinamico per il logo: lo scuriamo sui temi bianchi */
+        .hg-logo { width: 22px; height: 22px; margin-bottom: 4px; object-fit: contain; filter: ${hgTheme.includes('old') ? 'brightness(0.2)' : 'none'}; }
+        
         .hg-links { display: flex; gap: 8px; font-size: 9px; opacity: 0.7; }
         .hg-links a { color: inherit; text-decoration: none; }
-        .poisoned { border: 1px solid #ff4444 !important; }
+        .hg-links a:hover { color: ${t.accent}; opacity: 1; }
+        
+        /* Poisoning Mode */
+        .poisoned { border-color: #ff4444 !important; }
+        .poisoned #hg-verify-btn { 
+            border-color: #ff4444; background-image: url('${cdn}${t.imgFail}'); 
+            background-size: 70%; background-color: transparent; cursor: not-allowed; 
+        }
     `;
 
     const widget = document.createElement('div');
